@@ -1,6 +1,8 @@
 homework: finish features, create levels up to level 16
 
 improve UI
+update readme
+
 add: delayed auto shift
 make levels 9-16
 
