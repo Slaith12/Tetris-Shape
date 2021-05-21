@@ -1,0 +1,33 @@
+homework: finish features, create levels up to level 16
+
+improve UI
+add: delayed auto shift
+make levels 9-16
+
+level 1: learn basic mechanics
+level 2: harder version of level 1
+level 3: mid-air objective
+level 4: harder version of level 3
+level 5: harder version of level 4 (meant to help the player get used to the concept)
+level 6: 0 buffer level (single objective)
+level 7: harder version of level 6
+level 8: buffers become barriers to make towering to the objective harder (not borders)
+level 9: level 5 but with the new concept from level 8
+level 10: put objectives close to top
+level 11: 
+level 12: seperate objective regions
+level 13: triforce level
+level 14: 
+level 15: thin line objective
+level 16: 
+level 17: entire board is either objective or buffer
+level 18: chess board (alternating objective and buffer)
+level 19: 
+level 20: secret grade
+
+
+desired difficulty curve: exponential
+-------------------finish game-----------------------------
+publish to itch.io
+date: 
+work on resume
