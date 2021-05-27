@@ -18,7 +18,7 @@ level 9: level 5 but with the new concept from level 8
 level 10: put objectives close to top
 level 11: 
 level 12: seperate objective regions
-level 13: triforce level
+level 13: 
 level 14: 
 level 15: thin line objective
 level 16: 
