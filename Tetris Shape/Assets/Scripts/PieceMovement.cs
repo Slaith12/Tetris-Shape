@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public enum Piece { single, J, S, L, Z, T, I, O}
+public enum Piece { single = -1, J, S, L, Z, T, I, O}
 public class PieceMovement : MonoBehaviour
 {
     //references
@@ -10,18 +10,24 @@ public class PieceMovement : MonoBehaviour
     [SerializeField] Text holdText;
 
     //objective related variables
-    public float gravitySpeed = 1f;
-    float gravityTimer;
+    public float gravitySpeed;
     public int topRow;
+
+    //timers
+    float DASTimer;
+    float gravityTimer;
 
     //piece data
     int centerX;
     int centerY;
     Piece piece;
     int rotation;
-    int[][] tilePieces = new int[4][];
+    int[][] pieceTiles = new int[4][];
 
     //constants
+    const float SOFTDROPSPEED = 10;
+    const float DASDELAY = 0.5f; //the delay between when the button starts getting held and when DAS starts
+    const float DASRATE = 0.05f; //the delay between each DAS movement
     /// <summary>
     /// The position of the tiles of each piece based on the center tile.
     /// I and O pieces are not included since their "center tile" is not where their pivot is.
@@ -39,13 +45,15 @@ public class PieceMovement : MonoBehaviour
     //misc
     public Piece heldPiece;
     bool holdCooldown;
-    [SerializeField] float softDropSpeed = 10;
 
-    // Use this for initialization
+    //Use this for initialization
     public void Init()
     {
         boardManager = GetComponent<BoardManager>();
         holdText.text = "Holding: None";
+        heldPiece = Piece.single;
+        DASTimer = 0;
+        gravityTimer = 0;
         topRow = 20;
         //GetNewPiece(Piece.I);
     }
@@ -53,13 +61,14 @@ public class PieceMovement : MonoBehaviour
     void Update()
     {
         Gravity();
-        if(Input.GetKeyDown(KeyCode.LeftArrow))
+        DASTimer -= Time.deltaTime;
+        if(Input.GetKey(KeyCode.LeftArrow))
         {
-            ChangeLocation(-1, 0);
+            MoveLeft();
         }
-        else if(Input.GetKeyDown(KeyCode.RightArrow)) //prevent left and right at the same time. meant for Delayed Auto Shift. (not implemented yet)
+        else if(Input.GetKey(KeyCode.RightArrow)) //prevent left and right at the same time. meant for Delayed Auto Shift. (not implemented yet)
         {
-            ChangeLocation(1, 0);
+            MoveRight();
         }
         if(Input.GetKeyDown(KeyCode.UpArrow))
         {
@@ -75,17 +84,47 @@ public class PieceMovement : MonoBehaviour
         }
     }
 
+    //Main Control Functions
+
+    void MoveLeft()
+    {
+        if(Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            ChangeLocation(-1, 0);
+            DASTimer = DASDELAY;
+            return;
+        }
+        if(DASTimer > 0)
+        {
+            return;
+        }
+        ChangeLocation(-1, 0);
+        DASTimer = DASRATE;
+    }
+
+    void MoveRight()
+    {
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            ChangeLocation(1, 0);
+            DASTimer = DASDELAY;
+            return;
+        }
+        if(DASTimer > 0)
+        {
+            return;
+        }
+        ChangeLocation(1, 0);
+        DASTimer = DASRATE;
+    }
+
     void Hold()
     {
         if(holdCooldown)
         {
             return;
         }
-        foreach(int[] pieceCoords in tilePieces)
-        {
-            if(pieceCoords[1] < topRow)
-                boardManager.SetTile(pieceCoords[0], pieceCoords[1], TileState.Empty);
-        }
+        SetPieceTiles(TileState.Empty);
         Piece placeholder = piece;
         if(heldPiece != Piece.single)
         {
@@ -100,17 +139,10 @@ public class PieceMovement : MonoBehaviour
         holdCooldown = true;
     }
 
-    public void ResetPieces()
-    {
-        heldPiece = Piece.single;
-        holdText.text = "Holding: None";
-        holdCooldown = false;
-    }
-
     void Rotate(bool clockwise)
     {
         rotation += clockwise ? 1 : -1;
-        if(rotation >= 4)
+        if(rotation > 3)
         {
             rotation = 0;
         }
@@ -122,35 +154,12 @@ public class PieceMovement : MonoBehaviour
         {
             return;
         }
-        for(int i = 0; i < 4; i++)
-        {
-            foreach (int[] pieceCoords in tilePieces)
-            {
-                boardManager.SetTile(pieceCoords[0], pieceCoords[1], TileState.Empty);
-            }
-        }
+        SetPieceTiles(TileState.Empty);
         SetRotation(rotation);
-        
-        if(piece == Piece.I) //the I piece has a special kick.
-        {
-            if(!IPieceWallKick(clockwise))
-            {
-                rotation -= clockwise ? 1 : -1;
-                if (rotation >= 4)
-                {
-                    rotation = 0;
-                }
-                if (rotation < 0)
-                {
-                    rotation = 3;
-                }
-                SetRotation(rotation);
-            }
-        }
-        else if (!WallKick(clockwise))
+        if(!WallKick(clockwise))
         {
             rotation -= clockwise ? 1 : -1;
-            if (rotation >= 4)
+            if (rotation > 3)
             {
                 rotation = 0;
             }
@@ -160,11 +169,10 @@ public class PieceMovement : MonoBehaviour
             }
             SetRotation(rotation);
         }
-        foreach(int[] tileCoords in tilePieces)
-        {
-            boardManager.SetTile(tileCoords[0], tileCoords[1], TileState.Active);
-        }
+        SetPieceTiles(TileState.Active);
     }
+
+    //Rotation Functions
 
     void SetRotation(int rotation)
     {
@@ -175,25 +183,25 @@ public class PieceMovement : MonoBehaviour
                 case 0:
                     for (int i = 0; i < 4; i++)
                     {
-                        tilePieces[i] = new int[] { centerX + (i - 2), centerY };
+                        pieceTiles[i] = new int[] { centerX + (i - 2), centerY };
                     }
                     return;
                 case 1:
                     for (int i = 0; i < 4; i++)
                     {
-                        tilePieces[i] = new int[] { centerX, centerY - (i - 1) };
+                        pieceTiles[i] = new int[] { centerX, centerY - (i - 1) };
                     }
                     return;
                 case 2:
                     for (int i = 0; i < 4; i++)
                     {
-                        tilePieces[i] = new int[] { centerX + (i - 2), centerY - 1 };
+                        pieceTiles[i] = new int[] { centerX + (i - 2), centerY - 1 };
                     }
                     return;
                 case 3:
                     for (int i = 0; i < 4; i++)
                     {
-                        tilePieces[i] = new int[] { centerX - 1, centerY - (i - 1) };
+                        pieceTiles[i] = new int[] { centerX - 1, centerY - (i - 1) };
                     }
                     return;
             }
@@ -217,12 +225,51 @@ public class PieceMovement : MonoBehaviour
                 offsetX = offsetY;
                 offsetY = -placeholder;
             }
-            tilePieces[i] = new int[] { centerX + offsetX, centerY + offsetY };
+            pieceTiles[i] = new int[] { centerX + offsetX, centerY + offsetY };
         }
+    }
+
+    bool WallKick(bool clockwise)
+    {
+        if (piece == Piece.I) //the I piece has a special wall kicks
+        {
+            return IPieceWallKick(clockwise);
+        }
+        //all of these calculations below is used to reduce what would be 8 arrays to 1 array
+        int offsetXMult;
+        int offsetYMult;
+        if (clockwise)
+        {
+            offsetXMult = rotation < 2 ? 1 : -1;
+            offsetYMult = rotation % 2 == 0 ? -1 : 1;
+        }
+        else
+        {
+            offsetXMult = rotation % 3 == 0 ? -1 : 1;
+            offsetYMult = rotation % 2 == 0 ? -1 : 1;
+        }
+        for (int i = 0; i < 5; i++)
+        {
+            int offSetX = wallKickOffsets[i, 0] * offsetXMult;
+            int offSetY = wallKickOffsets[i, 1] * offsetYMult;
+            if (IsValidMove(offSetX, offSetY))
+            {
+                centerX += offSetX;
+                centerY += offSetY;
+                foreach (int[] pieceCoords in pieceTiles)
+                {
+                    pieceCoords[0] += offSetX;
+                    pieceCoords[1] += offSetY;
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
     bool IPieceWallKick(bool clockwise)
     {
+        //all of these calculations below is used to reduce what would be 8 arrays into 2 arrays
         int offsetMult;
         if (clockwise)
         {
@@ -243,14 +290,14 @@ public class PieceMovement : MonoBehaviour
             }
             else
             {
-                offSetX = iPieceKickOffsets[(rotation) % 2, i, 0] * offsetMult;
-                offSetY = iPieceKickOffsets[(rotation) % 2, i, 1] * offsetMult;
+                offSetX = iPieceKickOffsets[rotation % 2, i, 0] * offsetMult;
+                offSetY = iPieceKickOffsets[rotation % 2, i, 1] * offsetMult;
             }
             if (IsValidMove(offSetX, offSetY))
             {
                 centerX += offSetX;
                 centerY += offSetY;
-                foreach (int[] pieceCoords in tilePieces)
+                foreach (int[] pieceCoords in pieceTiles)
                 {
                     pieceCoords[0] += offSetX;
                     pieceCoords[1] += offSetY;
@@ -261,44 +308,13 @@ public class PieceMovement : MonoBehaviour
         return false;
     }
 
-    bool WallKick(bool clockwise)
-    {
-        int offsetXMult;
-        int offsetYMult;
-        if(clockwise)
-        {
-            offsetXMult = rotation < 2 ? 1 : -1;
-            offsetYMult = rotation % 2 == 0 ? -1 : 1;
-        }
-        else
-        {
-            offsetXMult = rotation % 3 == 0 ? -1 : 1;
-            offsetYMult = rotation % 2 == 0 ? -1 : 1;
-        }
-        for(int i = 0; i < 5; i++)
-        {
-            int offSetX = wallKickOffsets[i, 0]*offsetXMult;
-            int offSetY = wallKickOffsets[i, 1]*offsetYMult;
-            if (IsValidMove(offSetX,offSetY))
-            {
-                centerX += offSetX;
-                centerY += offSetY;
-                foreach (int[] pieceCoords in tilePieces)
-                {
-                    pieceCoords[0] += offSetX;
-                    pieceCoords[1] += offSetY;
-                }
-                return true;
-            }
-        }
-        return false;
-    }
+    //Gravity Functions
 
     void Gravity()
     {
         if (Input.GetKey(KeyCode.DownArrow))
         {
-            gravityTimer -= Time.deltaTime * softDropSpeed;
+            gravityTimer -= Time.deltaTime * SOFTDROPSPEED;
         }
         else
         {
@@ -308,64 +324,45 @@ public class PieceMovement : MonoBehaviour
         {
             if (!ChangeLocation(0, -1))
             {
-                holdCooldown = false;
-                if (piece == Piece.single)
-                {
-                    Debug.Log("Filling in a single piece at line " + centerY + " column " + centerX);
-                    boardManager.SetTile(centerX, centerY, TileState.Filled);
-                }
-                else
-                {
-                    Debug.Log("Filling in a " + piece + " piece at line " + centerY + " column " + centerX);
-                    foreach (int[] pieceCoords in tilePieces)
-                    {
-                        Debug.Log(pieceCoords[0]);
-                        Debug.Log(pieceCoords[1]);
-                        Debug.Log(topRow);
-                        if(pieceCoords[1] >= topRow)
-                        {
-                            //fail the level
-                            Debug.Log("Game Over");
-                            this.enabled = false;
-                            return;
-                        }
-                        boardManager.SetTile(pieceCoords[0], pieceCoords[1], TileState.Filled);
-                    }
-                }
-                boardManager.UpdateBoard();
+                PlacePiece();
             }
             gravityTimer = 1 / gravitySpeed;
         }
         if(Input.GetKeyDown(KeyCode.Space))
         {
-            holdCooldown = false;
-            Debug.Log("Sending piece down");
             while (ChangeLocation(0, -1)) ;
-            Debug.Log("Piece is at the bottom");
-            if (piece == Piece.single)
-            {
-                Debug.Log("Filling in a single piece at line " + centerY + " column " + centerX);
-                boardManager.SetTile(centerX, centerY, TileState.Filled);
-            }
-            else
-            {
-                Debug.Log("Filling in a " + piece + " piece at line " + centerY + " column " + centerX);
-                foreach (int[] pieceCoords in tilePieces)
-                {
-                    if (pieceCoords[1] >= topRow)
-                    {
-                        //fail the level
-                        Debug.Log("Game Over");
-                        this.enabled = false;
-                        return;
-                    }
-                    boardManager.SetTile(pieceCoords[0], pieceCoords[1], TileState.Filled);
-                }
-            }
-            boardManager.UpdateBoard();
+            PlacePiece();
             gravityTimer = 1 / gravitySpeed;
         }
     }
+
+    void PlacePiece()
+    {
+        holdCooldown = false;
+        if (piece == Piece.single)
+        {
+            Debug.Log("Filling in a single piece at line " + centerY + " column " + centerX);
+            boardManager.SetTile(centerX, centerY, TileState.Filled);
+        }
+        else
+        {
+            Debug.Log("Filling in a " + piece + " piece at line " + centerY + " column " + centerX);
+            foreach (int[] pieceCoords in pieceTiles)
+            {
+                if (pieceCoords[1] >= topRow)
+                {
+                    //fail the level
+                    Debug.Log("Game Over");
+                    this.enabled = false;
+                    return;
+                }
+                boardManager.SetTile(pieceCoords[0], pieceCoords[1], TileState.Filled);
+            }
+        }
+        boardManager.UpdateBoard();
+    }
+
+    //Helper Functions
 
     public void GetNewPiece(Piece newPiece)
     {
@@ -378,18 +375,18 @@ public class PieceMovement : MonoBehaviour
         //the I and O pieces are special cases, so they're handled seperately
         if(piece == Piece.I)
         {
-            tilePieces = new int[][] { new int[] { 3, topRow }, new int[] { 4, topRow }, new int[] { 5, topRow }, new int[] { 6, topRow } };
+            pieceTiles = new int[][] { new int[] { 3, topRow }, new int[] { 4, topRow }, new int[] { 5, topRow }, new int[] { 6, topRow } };
             return;
         }
         if(piece == Piece.O)
         {
-            tilePieces = new int[][] { new int[] { 4, topRow }, new int[] { 5, topRow }, new int[] { 4, topRow + 1 }, new int[] { 5, topRow + 1 } };
+            pieceTiles = new int[][] { new int[] { 4, topRow }, new int[] { 5, topRow }, new int[] { 4, topRow + 1 }, new int[] { 5, topRow + 1 } };
             return;
         }
-        tilePieces = new int[4][];
+        pieceTiles = new int[4][];
         for(int i = 0; i < 4; i++)
         {
-            tilePieces[i] = new int[] { centerX + tileOffsets[(int)piece - 1, i, 0], centerY + tileOffsets[(int)piece - 1, i, 1] };
+            pieceTiles[i] = new int[] { centerX + tileOffsets[(int)piece, i, 0], centerY + tileOffsets[(int)piece, i, 1] };
         }
     }
 
@@ -404,16 +401,13 @@ public class PieceMovement : MonoBehaviour
         }
         else
         {
-            foreach (int[] pieceCoords in tilePieces)
+            SetPieceTiles(TileState.Empty);
+            for(int i = 0; i < 4; i++)
             {
-                boardManager.SetTile(pieceCoords[0], pieceCoords[1], TileState.Empty);
-            }
-            for(int i = 0; i < 4; i++) //these for loops have to be seperate or else some tiles won't get filled in when moving in certain directions.
-            {
-                int tileX = tilePieces[i][0];
-                int tileY = tilePieces[i][1];
+                int tileX = pieceTiles[i][0];
+                int tileY = pieceTiles[i][1];
                 boardManager.SetTile(tileX + x, tileY + y,TileState.Active);
-                tilePieces[i] = new int[] { tileX + x, tileY + y };
+                pieceTiles[i] = new int[] { tileX + x, tileY + y };
             }
         }
         centerX += x;
@@ -431,10 +425,10 @@ public class PieceMovement : MonoBehaviour
         }
         else
         {
-            for(int i = 0; i < 4; i++)
+            foreach(int[] pieceCoords in pieceTiles)
             {
-                int tileX = tilePieces[i][0];
-                int tileY = tilePieces[i][1];
+                int tileX = pieceCoords[0];
+                int tileY = pieceCoords[1];
                 if (tileY > 19)
                     continue;
                 Tile tile = boardManager.GetTile(tileX + x, tileY + y);
@@ -450,8 +444,21 @@ public class PieceMovement : MonoBehaviour
 
     public void ResetPieces(int topRow)
     {
-        heldPiece = Piece.single; //if the single piece is held, it's treated like there's nothing being held
-        holdText.text = "Holding: None";
         this.topRow = topRow;
+        ResetPieces();
+    }
+
+    public void ResetPieces()
+    {
+        heldPiece = Piece.single;
+        holdText.text = "Holding: None";
+        holdCooldown = false;
+    }
+    void SetPieceTiles(TileState state)
+    {
+        foreach (int[] tileCoords in pieceTiles)
+        {
+            boardManager.SetTile(tileCoords[0], tileCoords[1], state);
+        }
     }
 }

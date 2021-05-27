@@ -144,7 +144,7 @@ public class BoardManager : MonoBehaviour
         while (!availablePieces[pieceNumber]); //if the current rng value isn't allowed by the bag, get a new rng value
             
         availablePieces[pieceNumber] = false; //take the current rng value out of the bag
-        pieceMovement.GetNewPiece((Piece)(pieceNumber + 1)); //spawn the new piece, +1 is because the single piece is the first piece in the enum
+        pieceMovement.GetNewPiece((Piece)pieceNumber); //spawn the new piece
         foreach(bool piece in availablePieces)
         {
             if (piece)
