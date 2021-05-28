@@ -212,8 +212,8 @@ public class PieceMovement : MonoBehaviour
         }
         for(int i = 0; i < 4; i++)
         {
-            int offsetX = tileOffsets[(int)piece - 1, i, 0];
-            int offsetY = tileOffsets[(int)piece - 1, i, 1];
+            int offsetX = tileOffsets[(int)piece, i, 0];
+            int offsetY = tileOffsets[(int)piece, i, 1];
             if(rotation >= 2)
             {
                 offsetX *= -1;
