@@ -2,9 +2,10 @@ homework: finish features, create levels up to level 16
 
 improve UI
 update readme
+display next pieces
+playtest all levels
 
-add: delayed auto shift
-make levels 9-16
+make levels 15-20
 
 level 1: learn basic mechanics
 level 2: harder version of level 1
@@ -32,4 +33,11 @@ desired difficulty curve: exponential
 -------------------finish game-----------------------------
 publish to itch.io
 date: 
+
+
+post-ship features:
+disabled pieces for certain levels
+
+I piece color: 0, 255, 255
+
 work on resume
