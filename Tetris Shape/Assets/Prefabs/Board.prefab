@@ -47,7 +47,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   emptyTile: {fileID: 3245964102708826009, guid: 17c78c88105a9df48b7a357eac21f222,
     type: 3}
-  pieceMovement: {fileID: 0}
+  canvas: {fileID: 0}
+  nextQueue: {fileID: 0}
+  pieceSprites:
+  - {fileID: 21300000, guid: 6a93a9888e32ab946a4f3700d65c0930, type: 3}
+  - {fileID: 21300000, guid: 5602eef4865907b498f2276f4ac74d84, type: 3}
+  - {fileID: 21300000, guid: 641b5d774ad0fe141a82e3f30eb50b5b, type: 3}
+  - {fileID: 21300000, guid: 3a8341c8778987e4989509f1debfe5ff, type: 3}
+  - {fileID: 21300000, guid: 6dee86c0746524946a8cae59b837b5d2, type: 3}
+  - {fileID: 21300000, guid: 18d8c619b9bd797428a31c3bba11f257, type: 3}
+  - {fileID: 21300000, guid: 8b5de7ea1806ca247bb782bf298e28d9, type: 3}
 --- !u!114 &4721561990923868056
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -60,9 +69,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21b039a13b4d73743a8bd6d24f19396e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boardManager: {fileID: 0}
-  softDropSpeed: 0
+  holdText: {fileID: 0}
   gravitySpeed: 1
+  topRow: 0
+  heldPiece: 0
 --- !u!114 &2158638932596074055
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -75,3 +85,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 218452bff2e624a4d880e5ed89a6f92e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentLevel: 0
+  bufferText: {fileID: 0}
+  levelText: {fileID: 0}
+  tipText: {fileID: 0}

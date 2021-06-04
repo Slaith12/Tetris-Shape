@@ -7,7 +7,7 @@ public class PieceMovement : MonoBehaviour
 {
     //references
     BoardManager boardManager;
-    [SerializeField] Text holdText;
+    [SerializeField] Image holdImage;
 
     //objective related variables
     public float gravitySpeed;
@@ -50,7 +50,7 @@ public class PieceMovement : MonoBehaviour
     public void Init()
     {
         boardManager = GetComponent<BoardManager>();
-        holdText.text = "Holding: None";
+        holdImage.color = Color.clear;
         heldPiece = Piece.single;
         DASTimer = 0;
         gravityTimer = 0;
@@ -124,7 +124,7 @@ public class PieceMovement : MonoBehaviour
         {
             return;
         }
-        SetPieceTiles(TileState.Empty);
+        FillPieceTiles(TileState.Empty);
         Piece placeholder = piece;
         if(heldPiece != Piece.single)
         {
@@ -132,10 +132,11 @@ public class PieceMovement : MonoBehaviour
         }
         else
         {
-            boardManager.GetNewPiece();
+            holdImage.color = Color.white;
+            GetNewPiece(boardManager.TakePiece());
         }
         heldPiece = placeholder;
-        holdText.text = "Holding: " + heldPiece;
+        holdImage.sprite = boardManager.pieceSprites[(int)heldPiece];
         holdCooldown = true;
     }
 
@@ -154,7 +155,7 @@ public class PieceMovement : MonoBehaviour
         {
             return;
         }
-        SetPieceTiles(TileState.Empty);
+        FillPieceTiles(TileState.Empty);
         SetRotation(rotation);
         if(!WallKick(clockwise))
         {
@@ -169,7 +170,7 @@ public class PieceMovement : MonoBehaviour
             }
             SetRotation(rotation);
         }
-        SetPieceTiles(TileState.Active);
+        FillPieceTiles(TileState.Active);
     }
 
     //Rotation Functions
@@ -336,6 +337,15 @@ public class PieceMovement : MonoBehaviour
         }
     }
 
+    void FillPieceTiles(TileState newState)
+    {
+        foreach(int[] tileCoords in pieceTiles)
+        {
+            boardManager.SetTile(tileCoords[0], tileCoords[1], piece);
+            boardManager.SetTile(tileCoords[0], tileCoords[1], newState);
+        }
+    }
+
     void PlacePiece()
     {
         holdCooldown = false;
@@ -401,14 +411,14 @@ public class PieceMovement : MonoBehaviour
         }
         else
         {
-            SetPieceTiles(TileState.Empty);
+            FillPieceTiles(TileState.Empty);
             for(int i = 0; i < 4; i++)
             {
                 int tileX = pieceTiles[i][0];
                 int tileY = pieceTiles[i][1];
-                boardManager.SetTile(tileX + x, tileY + y,TileState.Active);
                 pieceTiles[i] = new int[] { tileX + x, tileY + y };
             }
+            FillPieceTiles(TileState.Active);
         }
         centerX += x;
         centerY += y;
@@ -451,14 +461,7 @@ public class PieceMovement : MonoBehaviour
     public void ResetPieces()
     {
         heldPiece = Piece.single;
-        holdText.text = "Holding: None";
+        holdImage.color = Color.clear;
         holdCooldown = false;
-    }
-    void SetPieceTiles(TileState state)
-    {
-        foreach (int[] tileCoords in pieceTiles)
-        {
-            boardManager.SetTile(tileCoords[0], tileCoords[1], state);
-        }
     }
 }

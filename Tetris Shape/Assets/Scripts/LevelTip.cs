@@ -24,6 +24,6 @@ public class LevelTip : MonoBehaviour
 
     public void ToggleTip()
     {
-        tip.gameObject.SetActive(tip.gameObject.activeSelf);
+        tip.gameObject.SetActive(!tip.gameObject.activeSelf);
     }
 }

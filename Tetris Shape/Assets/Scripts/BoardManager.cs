@@ -1,13 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 
 public class BoardManager : MonoBehaviour
 {
     public Tile[,] tiles = new Tile[10,20];
     [SerializeField] GameObject emptyTile; //prefab
     [SerializeField] GameObject canvas;
+    [SerializeField] Image[] pieceImages;
+    public Sprite[] pieceSprites;
+
+    List<Piece> nextPieces;
 
     int clearedLines;
     bool[] availablePieces = new bool[] { true, true, true, true, true, true, true };
@@ -20,7 +24,8 @@ public class BoardManager : MonoBehaviour
         canvas.SetActive(false);
         pieceMovement = GetComponent<PieceMovement>();
         objectiveManager = GetComponent<ObjectiveManager>();
-        for(int i = 0; i < 10; i++)
+        nextPieces = new List<Piece>();
+        for (int i = 0; i < 10; i++)
         {
             for(int j = 0; j < 20; j++)
             {
@@ -71,33 +76,28 @@ public class BoardManager : MonoBehaviour
             pieceMovement.enabled = false;
             return;
         }
-        GetNewPiece();
+        pieceMovement.GetNewPiece(TakePiece());
     }
 
     public void SetTile(int x, int y, TileState newState)
     {
-        if(x < 0 || x > 9)
-        {
-            return;
-        }
-        if(y < 0 || y > 19)
-        {
-            return;
-        }
-        if(tiles[x,y].allowChanges)
-        {
-            tiles[x, y].state = newState;
-            return;
-        }
+        if(GetTile(x,y)?.allowChanges == true)
+            tiles[x,y].state = newState;
+    }
+
+    public void SetTile(int x, int y, Piece newPiece)
+    {
+        if (GetTile(x, y)?.allowChanges == true)
+            tiles[x, y].piece = newPiece;
     }
 
     public Tile GetTile(int x, int y)
     {
-        if(x < 0 || x > 9)
+        if (x < 0 || x > 9)
         {
             return null;
         }
-        if(y < 0 || y > 19)
+        if (y < 0 || y > 19)
         {
             return null;
         }
@@ -126,31 +126,54 @@ public class BoardManager : MonoBehaviour
                 tiles[tile, row].state = TileState.Blocked;
             }
         }
+        availablePieces = new bool[] { true, true, true, true, true, true, true };
+        nextPieces = new List<Piece>();
+        for (int i = 0; i < 3; i++)
+        {
+            nextPieces.Add(GetNewPiece());
+        }
+        UpdateNextQueue();
         pieceMovement.gravitySpeed = startSpeed;
         pieceMovement.ResetPieces();
-        availablePieces = new bool[] { true, true, true, true, true, true, true };
-        GetNewPiece();
+        pieceMovement.GetNewPiece(TakePiece());
     }
 
-    public void GetNewPiece()
+    public Piece TakePiece()
+    {
+        Piece nextPiece = nextPieces[0];
+        nextPieces.RemoveAt(0);
+        nextPieces.Insert(2, GetNewPiece());
+        UpdateNextQueue();
+        return nextPiece; //spawn the new piece
+    }
+
+    Piece GetNewPiece()
     {
         int pieceNumber;
         do
         {
             Debug.Log("Getting new number");
             //get a new rng value to determine the next piece
-            pieceNumber = Random.Range(0,7);
+            pieceNumber = Random.Range(0, 7);
         }
         while (!availablePieces[pieceNumber]); //if the current rng value isn't allowed by the bag, get a new rng value
-            
+
         availablePieces[pieceNumber] = false; //take the current rng value out of the bag
-        pieceMovement.GetNewPiece((Piece)pieceNumber); //spawn the new piece
-        foreach(bool piece in availablePieces)
+        foreach (bool piece in availablePieces)
         {
             if (piece)
-                return;
+                return (Piece)pieceNumber;
         }
         availablePieces = new bool[] { true, true, true, true, true, true, true };
+        return (Piece)pieceNumber;
+    }
+
+    void UpdateNextQueue()
+    {
+        for(int i = 0; i < pieceImages.Length; i++)
+        {
+            pieceImages[i].sprite = pieceSprites[(int)nextPieces[i]];
+        }
     }
 
     void ClearLine(int line)
@@ -173,6 +196,7 @@ public class BoardManager : MonoBehaviour
             for(int j = 0; j < 10; j++)
             {
                 tiles[j, i - 1].state = tiles[j, i].state;
+                tiles[j, i - 1].piece = tiles[j, i].piece;
             }
         }
         pieceMovement.gravitySpeed += objectiveManager.speedIncrease;

@@ -38,6 +38,12 @@ date:
 post-ship features:
 disabled pieces for certain levels
 
+J piece color: 0, 60, 255
+S piece color: 0, 255, 30
+L piece color: 255, 178, 0
+Z piece color: 255, 40, 0
+T piece color: 170, 0, 255
 I piece color: 0, 255, 255
+O piece color: 255, 240, 0
 
 work on resume

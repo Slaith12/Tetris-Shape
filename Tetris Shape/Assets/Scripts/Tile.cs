@@ -11,6 +11,7 @@ public class Tile : MonoBehaviour
     /// The state of this tile. It's not recommended to modify this directly. Instead, use BoardManager.SetTile()
     /// </summary>
     public TileState state;
+    public Piece piece;
     public ObjectiveState obj;
     public bool allowChanges;
     [SerializeField] SpriteRenderer border;
@@ -28,6 +29,16 @@ public class Tile : MonoBehaviour
         border.sortingOrder = (int)obj;
         allowChanges = state != TileState.Blocked;
         border.color = borders[(int)obj];
-        tileFilling.color = fillings[(int)state];
+        if(state == TileState.Blocked)
+        {
+            tileFilling.color = new Color(30f / 255f, 30f / 255f, 30f / 255f);
+            return;
+        }
+        if(state == TileState.Empty)
+        {
+            tileFilling.color = new Color() { a = 0 };
+            return;
+        }
+        tileFilling.color = fillings[(int)piece];
     }
 }
