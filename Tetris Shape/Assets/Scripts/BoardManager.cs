@@ -118,7 +118,7 @@ public class BoardManager : MonoBehaviour
 
     public void BeginLevel(int startingTopRow, float startSpeed)
     {
-        pieceMovement.topRow = startingTopRow;
+        pieceMovement.enabled = true;
         for(int row = startingTopRow; row < 20; row++)
         {
             for(int tile = 0; tile < 10; tile++)
@@ -134,7 +134,7 @@ public class BoardManager : MonoBehaviour
         }
         UpdateNextQueue();
         pieceMovement.gravitySpeed = startSpeed;
-        pieceMovement.ResetPieces();
+        pieceMovement.ResetPieces(startingTopRow);
         pieceMovement.GetNewPiece(TakePiece());
     }
 

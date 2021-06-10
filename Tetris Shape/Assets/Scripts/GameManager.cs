@@ -32,8 +32,6 @@ public class GameManager : MonoBehaviour
                 {
                     goto case "Main Menu";
                 }
-                pieceMovement.enabled = true;
-                pieceMovement.ResetPieces(20);
                 break;
             case "Main Menu":
                 SceneManager.LoadScene("Level Select");

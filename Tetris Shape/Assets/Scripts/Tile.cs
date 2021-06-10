@@ -26,7 +26,7 @@ public class Tile : MonoBehaviour
     
     void Update()
     {
-        border.sortingOrder = (int)obj;
+        border.sortingOrder = (int)obj + 1;
         allowChanges = state != TileState.Blocked;
         border.color = borders[(int)obj];
         if(state == TileState.Blocked)
