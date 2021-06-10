@@ -430,7 +430,7 @@ public class PieceMovement : MonoBehaviour
         if (piece == Piece.single)
         {
             Tile tile = boardManager.GetTile(centerX + x, centerY + y);
-            if (tile == null || tile.state == TileState.Filled)
+            if (tile == null || tile.State == TileState.Filled)
                 return false;
         }
         else
@@ -442,7 +442,7 @@ public class PieceMovement : MonoBehaviour
                 if (tileY > 19)
                     continue;
                 Tile tile = boardManager.GetTile(tileX + x, tileY + y);
-                if(tile == null || tile.state == TileState.Filled)
+                if(tile == null || tile.State == TileState.Filled)
                 {
                     Debug.Log("Movement not accepted because the tile collided with another tile");
                     return false;

@@ -49,8 +49,8 @@ public class BoardManager : MonoBehaviour
         {
             for(int j = 0; j < 20; j++)
             {
-                tiles[i, j].state = TileState.Empty;
-                tiles[i, j].obj = ObjectiveState.Regular;
+                tiles[i, j].State = TileState.Empty;
+                tiles[i, j].ObjState = ObjectiveState.Regular;
             }
         }
         canvas.SetActive(false);
@@ -82,13 +82,13 @@ public class BoardManager : MonoBehaviour
     public void SetTile(int x, int y, TileState newState)
     {
         if(GetTile(x,y)?.allowChanges == true)
-            tiles[x,y].state = newState;
+            tiles[x,y].State = newState;
     }
 
     public void SetTile(int x, int y, Piece newPiece)
     {
         if (GetTile(x, y)?.allowChanges == true)
-            tiles[x, y].piece = newPiece;
+            tiles[x, y].Piece = newPiece;
     }
 
     public Tile GetTile(int x, int y)
@@ -108,7 +108,7 @@ public class BoardManager : MonoBehaviour
     {
         for (int j = 0; j < 10; j++) //go through each tile in the line to look at it's state
         {
-            if (tiles[j, line].state != TileState.Filled)
+            if (tiles[j, line].State != TileState.Filled)
             {
                 return false;
             }
@@ -119,11 +119,12 @@ public class BoardManager : MonoBehaviour
     public void BeginLevel(int startingTopRow, float startSpeed)
     {
         pieceMovement.enabled = true;
+        clearedLines = 0;
         for(int row = startingTopRow; row < 20; row++)
         {
             for(int tile = 0; tile < 10; tile++)
             {
-                tiles[tile, row].state = TileState.Blocked;
+                tiles[tile, row].State = TileState.Blocked;
             }
         }
         availablePieces = new bool[] { true, true, true, true, true, true, true };
@@ -181,22 +182,22 @@ public class BoardManager : MonoBehaviour
         clearedLines++;
         for(int i = 0; i < 10; i++)
         {
-            tiles[i, line].state = TileState.Empty;
+            tiles[i, line].State = TileState.Empty;
         }
         for(int i = line+1; i < 20; i++)
         {
-            if(tiles[0,i].state == TileState.Blocked)
+            if(tiles[0,i].State == TileState.Blocked)
             {
                 for(int j = 0; j < 10; j++)
                 {
-                    tiles[j, i - 1].state = TileState.Empty;
+                    tiles[j, i - 1].State = TileState.Empty;
                 }
                 break;
             }
             for(int j = 0; j < 10; j++)
             {
-                tiles[j, i - 1].state = tiles[j, i].state;
-                tiles[j, i - 1].piece = tiles[j, i].piece;
+                tiles[j, i - 1].State = tiles[j, i].State;
+                tiles[j, i - 1].Piece = tiles[j, i].Piece;
             }
         }
         pieceMovement.gravitySpeed += objectiveManager.speedIncrease;
@@ -205,7 +206,7 @@ public class BoardManager : MonoBehaviour
             pieceMovement.topRow--;
             for (int i = 0; i < 10; i++)
             {
-                tiles[i, pieceMovement.topRow].state = TileState.Blocked;
+                tiles[i, pieceMovement.topRow].State = TileState.Blocked;
             }
         }
     }

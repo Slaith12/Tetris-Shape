@@ -95,11 +95,11 @@ public class ObjectiveManager : MonoBehaviour
     {
         foreach(int[] tile in objTiles.bufferTiles)
         {
-            boardManager.GetTile(tile[0], tile[1]).obj = ObjectiveState.Buffer;
+            boardManager.GetTile(tile[0], tile[1]).ObjState = ObjectiveState.Buffer;
         }
         for(int tile = 0; tile < objTiles.requiredTiles.GetLength(0);tile++)
         {
-            boardManager.GetTile(objTiles.requiredTiles[tile][0], objTiles.requiredTiles[tile][1]).obj = ObjectiveState.Required;
+            boardManager.GetTile(objTiles.requiredTiles[tile][0], objTiles.requiredTiles[tile][1]).ObjState = ObjectiveState.Required;
         }
         for(int tileID = 0; tileID < objTiles.requiredTiles.GetLength(0); tileID++)
         {
@@ -110,9 +110,9 @@ public class ObjectiveManager : MonoBehaviour
             {
                 for(int j = Mathf.Max(0, tile[1] - objTiles.borderSize); j <= Mathf.Min(19, tile[1] + objTiles.borderSize); j++)
                 {
-                    if(boardManager.GetTile(i, j).obj == ObjectiveState.Regular)
+                    if(boardManager.GetTile(i, j).ObjState == ObjectiveState.Regular)
                     {
-                        boardManager.GetTile(i, j).obj = ObjectiveState.Buffer;
+                        boardManager.GetTile(i, j).ObjState = ObjectiveState.Buffer;
                         objTiles.bufferTiles.Add(new int[] { i, j });
                         Debug.Log("Generating buffer tile at row " + j + " column " + i);
                     }
@@ -128,10 +128,10 @@ public class ObjectiveManager : MonoBehaviour
                                                    { 3, 2 }, { 4, 2 }, { 5, 2 }, { 6, 2 },
                                                    { 3, 3 }, { 4, 3 }, { 5, 3 }, { 6, 3 } }, 0.1f, 2));
         //level 2
-        levels.Add(new LevelData(1, 8, new int[,] { { 4, 0 }, { 5, 0 }, { 3, 1 }, { 4, 1 }, { 5, 1 }, { 6, 1 }, { 2, 2 }, { 3, 2 }, { 4, 2 }, { 5, 2 }, { 6, 2 }, { 7, 2 },
-                                                    { 1, 3 }, { 2, 3 }, { 3, 3 }, { 4, 3 }, { 5, 3 }, { 6, 3 }, { 7, 3 }, { 8, 3 } }, 0.1f, 3));
+        levels.Add(new LevelData(1, 6, new int[,] { { 4, 3 }, { 5, 3 }, { 3, 2 }, { 4, 2 }, { 5, 2 }, { 6, 2 }, { 2, 1 }, { 3, 1 }, { 4, 1 }, { 5, 1 }, { 6, 1 }, { 7, 1 },
+                                                    { 1, 0 }, { 2, 0 }, { 3, 0 }, { 4, 0 }, { 5, 0 }, { 6, 0 }, { 7, 0 }, { 8, 0 } }, 0.1f, 3));
         //level 3
-        levels.Add(new LevelData(2, 10, new int[,] { { 3, 4 }, { 4, 4 }, { 5, 4 }, { 6, 4 },
+        levels.Add(new LevelData(1, 5, new int[,] { { 3, 4 }, { 4, 4 }, { 5, 4 }, { 6, 4 },
                                                      { 3, 5 }, { 4, 5 }, { 5, 5 }, { 6, 5 },
                                                      { 3, 6 }, { 4, 6 }, { 5, 6 }, { 6, 6 },
                                                      { 3, 7 }, { 4, 7 }, { 5, 7 }, { 6, 7 } }, 0.2f, 3));
@@ -142,12 +142,12 @@ public class ObjectiveManager : MonoBehaviour
                                                      { 7, 5 }, { 7, 6 }, { 6, 6 }, { 6, 7 }, { 5, 7 },
                                                      { 5, 8 }, { 4, 8 }, { 4, 7 }, { 3, 7 }, { 3, 6 }, { 2, 6 }, { 2, 5 }, { 3, 5 }, { 3, 4 }, { 4, 4 } }, 0.3f, 2));
         //level 6
-        levels.Add(new LevelData(1, 0, new int[,] { { 4, 2 } }, 0.1f, 3));
+        levels.Add(new LevelData(1, 0, new int[,] { { 4, 5 } }, 0.1f, 3));
         //level 7
-        levels.Add(new LevelData(1, 0, new int[,] { { 3, 5 }, { 4, 5 }, { 5, 5 }, { 3, 6 }, { 4, 6 }, { 5, 6 }, { 4, 7 }, { 5, 7 } }, 0.05f, 5));
+        levels.Add(new LevelData(1, 0, new int[,] { { 4, 5 }, { 5, 5 }, { 4, 6 }, { 5, 6 }, { 4, 7 }, { 5, 7 } }, 0.05f, 5));
         //level 8
-        levels.Add(new LevelData(new int[,] { { 3, 2 }, { 3, 3 }, { 3, 4 }, { 4, 2 }, { 4, 3 }, { 4, 4 }, { 5, 2 }, { 5, 3 }, { 5, 4 }, { 6, 2 }, { 6, 3 }, { 6, 4 } },
-                                 0, new int[,] { { 3, 5 }, { 4, 5 }, { 5, 5 }, { 6, 5 } }, 0.2f, 3));
+        levels.Add(new LevelData(new int[,] { { 2, 3 }, { 2, 4 }, { 2, 5 }, { 2, 6 }, { 2, 7 }, { 2, 8 }, { 3, 8 }, { 4, 8 }, { 5, 8 }, { 6, 8 }, { 7, 8 }, { 7, 7 }, { 7, 6 }, { 7, 5 }, { 7, 4 }, { 7, 3 }, { 6, 3 }, { 5, 3 }, { 4, 3 }, { 3, 3 }, { 2, 3 } },
+                                 0, new int[,] { { 4, 6 }, { 4, 5 }, { 5, 5 }, { 5, 6 } }, 0.2f, 3));
         //level 9
         levels.Add(new LevelData(new int[,] { { 3, 3 }, { 3, 2 }, { 4, 2 }, { 5, 2 }, { 6, 2 }, { 6, 3 }, { 7, 3 }, { 7, 4 }, { 8, 4 }, { 8, 5 },
                                               { 8, 6 }, { 8, 7 }, { 7, 7 }, { 7, 8 }, { 6, 8 }, { 6, 9 }, { 5, 9 }, { 4, 9 }, { 3, 9 }, { 3, 8 },
@@ -156,7 +156,7 @@ public class ObjectiveManager : MonoBehaviour
         //level 10
         levels.Add(new LevelData(new int[,] { { 0, 0 }, { 9, 0 }, { 1, 1 }, { 8, 1 }, { 2, 2 }, { 7, 2 }, { 3, 3 }, { 6, 3 }, { 4, 4 }, { 5, 4 },
                                               { 5, 5 }, { 4, 5 }, { 6, 6 }, { 3, 6 }, { 7, 7 }, { 2, 7 }, { 8, 8 }, { 1, 8 }, { 9, 9 }, { 0, 9 } }, 0,
-                                 new int[,] { { 4, 19 }, { 5, 19 } }, 0, 8));
+                                 new int[,] { { 4, 18 }, { 5, 18 } }, 0, 20));
         //level 11
         levels.Add(new LevelData(new int[,] { { 0, 0 }, { 1, 0 }, { 2, 0 }, { 0, 1 }, { 1, 1 }, { 2, 1 }, { 9, 0 }, { 8, 0 }, { 7, 0 }, { 9, 1 }, { 8, 1 }, { 7, 1 },
                                               { 3, 2 }, { 4, 2 }, { 5, 2 }, { 6, 2 }, { 3, 3 }, { 4, 3 }, { 5, 3 }, { 6, 3 },
@@ -209,7 +209,7 @@ public class ObjectiveManager : MonoBehaviour
         bool reqTilesFilled = true;
         foreach(int[] tiles in levels[currentLevel].requiredTiles)
         {
-            switch(boardManager.GetTile(tiles[0],tiles[1])?.state)
+            switch(boardManager.GetTile(tiles[0],tiles[1])?.State)
             {
                 case TileState.Blocked:
                     Debug.Log("Game Over");
@@ -229,7 +229,7 @@ public class ObjectiveManager : MonoBehaviour
         int buffers = 0;
         for (int i = 0; i < levels[currentLevel].bufferTiles.Count; i++)
         {
-            switch (boardManager.GetTile(levels[currentLevel].bufferTiles[i][0], levels[currentLevel].bufferTiles[i][1])?.state)
+            switch (boardManager.GetTile(levels[currentLevel].bufferTiles[i][0], levels[currentLevel].bufferTiles[i][1])?.State)
             {
                 case TileState.Blocked:
                     //fail the level

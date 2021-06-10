@@ -10,9 +10,40 @@ public class Tile : MonoBehaviour
     /// <summary>
     /// The state of this tile. It's not recommended to modify this directly. Instead, use BoardManager.SetTile()
     /// </summary>
-    public TileState state;
-    public Piece piece;
-    public ObjectiveState obj;
+    public TileState State
+    {
+        get { return state; }
+        set
+        {
+            state = value;
+            allowChanges = state != TileState.Blocked;
+            if (state == TileState.Blocked)
+            {
+                tileFilling.color = new Color(30f / 255f, 30f / 255f, 30f / 255f);
+                return;
+            }
+            if (state == TileState.Empty)
+            {
+                tileFilling.color = new Color() { a = 0 };
+                return;
+            }
+            tileFilling.color = fillings[(int)Piece];
+        }
+    }
+    TileState state;
+    public Piece Piece { get { return piece; } set { piece = value; State = State; } }
+    Piece piece;
+    public ObjectiveState ObjState
+    {
+        get { return obj; }
+        set
+        {
+            obj = value;
+            border.sortingOrder = (int)obj + 1;
+            border.color = borders[(int)obj];
+        }
+    }
+    ObjectiveState obj;
     public bool allowChanges;
     [SerializeField] SpriteRenderer border;
     [SerializeField] SpriteRenderer tileFilling;
@@ -26,19 +57,6 @@ public class Tile : MonoBehaviour
     
     void Update()
     {
-        border.sortingOrder = (int)obj + 1;
-        allowChanges = state != TileState.Blocked;
-        border.color = borders[(int)obj];
-        if(state == TileState.Blocked)
-        {
-            tileFilling.color = new Color(30f / 255f, 30f / 255f, 30f / 255f);
-            return;
-        }
-        if(state == TileState.Empty)
-        {
-            tileFilling.color = new Color() { a = 0 };
-            return;
-        }
-        tileFilling.color = fillings[(int)piece];
+
     }
 }
