@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] GameObject board;
+    [SerializeField] GameObject pauseScreen;
 
     ObjectiveManager objectiveManager;
     PieceMovement pieceMovement;
@@ -16,6 +17,7 @@ public class GameManager : MonoBehaviour
         objectiveManager = board.GetComponent<ObjectiveManager>();
         pieceMovement = board.GetComponent<PieceMovement>();
         boardManager = board.GetComponent<BoardManager>();
+        pauseScreen.SetActive(false);
     }
     
     void Update()
@@ -36,7 +38,17 @@ public class GameManager : MonoBehaviour
             case "Main Menu":
                 SceneManager.LoadScene("Level Select");
                 break;
-                
+            case "Pause":
+                pauseScreen.SetActive(true);
+                pieceMovement.enabled = false;
+                break;
+            case "Restart":
+                objectiveManager.StartLevel(objectiveManager.currentLevel);
+                goto case "Resume";
+            case "Resume":
+                pauseScreen.SetActive(false);
+                pieceMovement.enabled = true;
+                break;
         }
     }
 }

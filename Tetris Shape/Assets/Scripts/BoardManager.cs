@@ -6,8 +6,9 @@ using UnityEngine.UI;
 public class BoardManager : MonoBehaviour
 {
     public Tile[,] tiles = new Tile[10,20];
-    [SerializeField] GameObject emptyTile; //prefab
-    [SerializeField] GameObject canvas;
+    [SerializeField] GameObject emptyTile;
+    [SerializeField] GameObject winScreen;
+    [SerializeField] Text lineDropText;
     [SerializeField] Image[] pieceImages;
     public Sprite[] pieceSprites;
 
@@ -21,7 +22,7 @@ public class BoardManager : MonoBehaviour
     
     void Start()
     {
-        canvas.SetActive(false);
+        winScreen.SetActive(false);
         pieceMovement = GetComponent<PieceMovement>();
         objectiveManager = GetComponent<ObjectiveManager>();
         nextPieces = new List<Piece>();
@@ -53,7 +54,7 @@ public class BoardManager : MonoBehaviour
                 tiles[i, j].ObjState = ObjectiveState.Regular;
             }
         }
-        canvas.SetActive(false);
+        winScreen.SetActive(false);
     }
 
     public void UpdateBoard()
@@ -68,7 +69,7 @@ public class BoardManager : MonoBehaviour
         }
         if(objectiveManager.CheckObjective())
         {
-            canvas.SetActive(true);
+            winScreen.SetActive(true);
             if(!PlayerPrefs.HasKey("Unlocked Levels") || PlayerPrefs.GetInt("Unlocked Levels") < objectiveManager.currentLevel)
             {
                 PlayerPrefs.SetInt("Unlocked Levels", objectiveManager.currentLevel);
@@ -134,6 +135,7 @@ public class BoardManager : MonoBehaviour
             nextPieces.Add(GetNewPiece());
         }
         UpdateNextQueue();
+        lineDropText.text = "Top line falls after " + objectiveManager.lineDrop + " line clears.";
         pieceMovement.gravitySpeed = startSpeed;
         pieceMovement.ResetPieces(startingTopRow);
         pieceMovement.GetNewPiece(TakePiece());
@@ -209,5 +211,6 @@ public class BoardManager : MonoBehaviour
                 tiles[i, pieceMovement.topRow].State = TileState.Blocked;
             }
         }
+        lineDropText.text = "Top line falls after " + (objectiveManager.lineDrop - (clearedLines % objectiveManager.lineDrop)) + " line clears.";
     }
 }

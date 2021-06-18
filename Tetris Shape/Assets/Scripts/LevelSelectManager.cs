@@ -23,4 +23,9 @@ public class LevelSelectManager : MonoBehaviour
         PlayerPrefs.SetInt("Current Level", level);
         SceneManager.LoadScene("Board");
     }
+
+    public void Quit()
+    {
+        Application.Quit();
+    }
 }

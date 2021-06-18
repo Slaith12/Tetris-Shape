@@ -3,8 +3,7 @@ homework:
 improve UI
 update readme
 playtest all levels
-play through first 10 levels and redesign any levels that need it
-
+consider changing levels 4 and 5
 
 
 level 1: learn basic mechanics

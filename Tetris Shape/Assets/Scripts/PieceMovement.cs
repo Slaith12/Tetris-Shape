@@ -440,7 +440,11 @@ public class PieceMovement : MonoBehaviour
                 int tileX = pieceCoords[0];
                 int tileY = pieceCoords[1];
                 if (tileY > 19)
+                {
+                    if (tileX + x < 0 || tileX + x > 9)
+                        return false;
                     continue;
+                }
                 Tile tile = boardManager.GetTile(tileX + x, tileY + y);
                 if(tile == null || tile.State == TileState.Filled)
                 {

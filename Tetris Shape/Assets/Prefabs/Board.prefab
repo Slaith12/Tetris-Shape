@@ -47,8 +47,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   emptyTile: {fileID: 3245964102708826009, guid: 17c78c88105a9df48b7a357eac21f222,
     type: 3}
-  canvas: {fileID: 0}
-  nextQueue: {fileID: 0}
+  winScreen: {fileID: 0}
+  pieceImages:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   pieceSprites:
   - {fileID: 21300000, guid: 6a93a9888e32ab946a4f3700d65c0930, type: 3}
   - {fileID: 21300000, guid: 5602eef4865907b498f2276f4ac74d84, type: 3}
@@ -69,7 +72,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21b039a13b4d73743a8bd6d24f19396e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  holdText: {fileID: 0}
+  holdImage: {fileID: 0}
   gravitySpeed: 1
   topRow: 0
   heldPiece: 0
