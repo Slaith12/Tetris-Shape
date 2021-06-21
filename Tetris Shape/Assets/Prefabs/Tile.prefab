@@ -207,9 +207,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b04de317351040d4ebdbd66fe135e797, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  state: 0
-  piece: 0
-  obj: 0
   allowChanges: 0
   border: {fileID: 1796908947673200251}
   tileFilling: {fileID: 2803363403805394257}
