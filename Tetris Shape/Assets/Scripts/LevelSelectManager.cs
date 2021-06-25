@@ -15,7 +15,7 @@ public class LevelSelectManager : MonoBehaviour
     
     void Update()
     {
-        
+
     }
 
     public void LoadLevel(int level)
@@ -26,6 +26,6 @@ public class LevelSelectManager : MonoBehaviour
 
     public void Quit()
     {
-        Application.Quit();
+        SceneManager.LoadScene("Title Scene");
     }
 }

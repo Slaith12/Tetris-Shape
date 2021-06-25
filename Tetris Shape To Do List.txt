@@ -3,12 +3,11 @@ homework:
 add intro level before level 6 showing strategy
 improve UI
 update readme
-brainstorm name
 playtest, add, reorder levels
 nerf levels 11-13
 change levels 15-16
 level locking
-develop title screen showing controls
+finish controls page
 
 maybe:
 consider changing levels 4 and 5
