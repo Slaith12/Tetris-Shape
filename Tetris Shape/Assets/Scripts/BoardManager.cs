@@ -12,7 +12,7 @@ public class BoardManager : MonoBehaviour
     [SerializeField] Image[] pieceImages;
     public Sprite[] pieceSprites;
 
-    List<Piece> nextPieces;
+    public List<Piece> nextPieces; //this is literally a queue but i'm using a list instead. i don't know why
 
     int clearedLines;
     bool[] availablePieces = new bool[] { true, true, true, true, true, true, true };
@@ -70,9 +70,9 @@ public class BoardManager : MonoBehaviour
         if(objectiveManager.CheckObjective())
         {
             winScreen.SetActive(true);
-            if(!PlayerPrefs.HasKey("Unlocked Levels") || PlayerPrefs.GetInt("Unlocked Levels") < objectiveManager.currentLevel)
+            if(!objectiveManager.onTutorial && (!PlayerPrefs.HasKey("Unlocked Levels") || PlayerPrefs.GetInt("Unlocked Levels") <= objectiveManager.currentLevel))
             {
-                PlayerPrefs.SetInt("Unlocked Levels", objectiveManager.currentLevel);
+                PlayerPrefs.SetInt("Unlocked Levels", objectiveManager.currentLevel + 1);
             }
             pieceMovement.enabled = false;
             return;
@@ -90,6 +90,15 @@ public class BoardManager : MonoBehaviour
     {
         if (GetTile(x, y)?.allowChanges == true)
             tiles[x, y].Piece = newPiece;
+    }
+
+    public void SetTile(int x, int y, TileState newState, Piece newPiece)
+    {
+        if (GetTile(x, y)?.allowChanges == true)
+        {
+            tiles[x, y].State = newState;
+            tiles[x, y].Piece = newPiece;
+        }
     }
 
     public Tile GetTile(int x, int y)
@@ -171,7 +180,7 @@ public class BoardManager : MonoBehaviour
         return (Piece)pieceNumber;
     }
 
-    void UpdateNextQueue()
+    public void UpdateNextQueue()
     {
         for(int i = 0; i < pieceImages.Length; i++)
         {

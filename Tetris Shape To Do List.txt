@@ -1,17 +1,19 @@
 homework:
 
-add intro level before level 6 showing strategy
 improve UI
 update readme
 playtest, add, reorder levels
+
+By Monday:
 nerf levels 11-13
+test 14
 change levels 15-16
-level locking
 finish controls page
 
 maybe:
 consider changing levels 4 and 5
-
+consider adding level titles
+consider audio
 
 level 1: learn basic mechanics
 level 2: harder version of level 1

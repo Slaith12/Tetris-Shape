@@ -3745,6 +3745,11 @@ PrefabInstance:
       propertyPath: tipText
       value: 
       objectReference: {fileID: 1328181012}
+    - target: {fileID: 2158638932596074055, guid: 783bd7eebfa53534e97a7640721de446,
+        type: 3}
+      propertyPath: gameManager
+      value: 
+      objectReference: {fileID: 519420030}
     - target: {fileID: 4721561990923868056, guid: 783bd7eebfa53534e97a7640721de446,
         type: 3}
       propertyPath: softDropSpeed

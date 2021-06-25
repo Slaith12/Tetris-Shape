@@ -5,16 +5,30 @@ using UnityEngine.UI;
 
 public class ObjectiveManager : MonoBehaviour
 {
-    public List<LevelData> levels = new List<LevelData>(); //the first item in the list shows {buffer thickness, buffer cells allowed}. the rest of the items are coordinates for the required cells.
     public int currentLevel;
-    public float speedIncrease { get { return levels[currentLevel].speedIncrease; } }
-    public int lineDrop { get { return levels[currentLevel].lineDrop; } }
+    public bool onTutorial;
+    public float speedIncrease { get
+        {
+            if (onTutorial)
+                return tutorials[currentLevel].baseLevel.speedIncrease;
+            return levels[currentLevel].speedIncrease;
+        } }
+    public int lineDrop { get
+        {
+            if (onTutorial)
+                return tutorials[currentLevel].baseLevel.lineDrop;
+            return levels[currentLevel].lineDrop;
+        } }
     [SerializeField] Text bufferText;
     [SerializeField] Text levelText;
     [SerializeField] LevelTip tipText;
+    [SerializeField] GameManager gameManager;
+
+    List<LevelData> levels = new List<LevelData>();
+    List<TutorialLevel> tutorials = new List<TutorialLevel>();
+
     BoardManager boardManager;
     PieceMovement pieceMovement;
-
 
     public struct LevelData
     {
@@ -71,25 +85,49 @@ public class ObjectiveManager : MonoBehaviour
         public string tip;
     }
 
+    public struct TutorialLevel
+    {
+        public TutorialLevel(LevelData baseLevel, int[][,] pieceLocations, Piece[] initialQueue, int precedingLevel)
+        {
+            this.baseLevel = baseLevel;
+            this.pieceLocations = pieceLocations;
+            this.initialQueue = initialQueue;
+            this.precedingLevel = precedingLevel;
+        }
+
+        public LevelData baseLevel;
+        public int[][,] pieceLocations;
+        public Piece[] initialQueue;
+        public int precedingLevel;
+    }
+
     // Use this for initilization
     public void Init()
     {
+        onTutorial = false;
         boardManager = GetComponent<BoardManager>();
         pieceMovement = GetComponent<PieceMovement>();
         InitLevels();
         if (!PlayerPrefs.HasKey("Current Level"))
             PlayerPrefs.SetInt("Current Level", 0);
         StartLevel(PlayerPrefs.GetInt("Current Level"));
-        bufferText.color = Color.green;
-        bufferText.text = "0/" + levels[currentLevel].allowedBuffers + " buffers used.";
     }
 
     public void Update()
     {
         if(Input.GetKeyDown(KeyCode.R))
         {
-            StartLevel(currentLevel);
+            Restart();
         }
+    }
+
+    public void Restart()
+    {
+        gameManager.HandleButton("Resume");
+        if (onTutorial)
+            StartTutorial(currentLevel);
+        else
+            StartLevel(currentLevel);
     }
 
     void GenerateTiles(LevelData objTiles)
@@ -144,6 +182,14 @@ public class ObjectiveManager : MonoBehaviour
                                                      { 5, 8 }, { 4, 8 }, { 4, 7 }, { 3, 7 }, { 3, 6 }, { 2, 6 }, { 2, 5 }, { 3, 5 }, { 3, 4 }, { 4, 4 } }, 0.3f, 2));
         //level 6
         levels.Add(new LevelData(1, 0, new int[,] { { 4, 5 } }, 0.1f, 3));
+        //tutorial for level 6
+        tutorials.Add(new TutorialLevel(levels[5], new int[][,] { new int[,] { { 0, 0 }, { 0, 1 }, { 1, 0 }, { 2, 0 }, { 9, 7 }, { 9, 8 }, { 8, 8 }, { 7, 8 } },
+                                                                  new int[,] { { 1, 1 }, { 2, 1 }, { 2, 2 }, { 3, 2 }, { 7, 5 }, { 8, 5 }, { 8, 6 }, { 9, 6 } },
+                                                                  new int[,] { { 1, 2 }, { 1, 3 }, { 2, 3 }, { 3, 3 }, { 6, 1 }, { 7, 1 }, { 8, 1 }, { 8, 2 }, { 2, 7 }, { 3, 7 }, { 4, 7 }, { 4, 8 } },
+                                                                  new int[,] { { 1, 4 }, { 1, 5 }, { 2, 5 }, { 2, 6 }, { 7, 2 }, { 7, 3 }, { 8, 3 }, { 8, 4 } },
+                                                                  new int[,] { },
+                                                                  new int[,] { { 0, 2 }, { 0, 3 }, { 0, 4 }, { 0, 5 }, { 6, 0 }, { 7, 0 }, { 8, 0 }, { 9, 0 }, { 5, 7 }, { 6, 7 }, { 7, 7 }, { 8, 7 }, { 9, 1 }, { 9, 2 }, { 9, 3 }, { 9, 4 } },
+                                                                  new int[,] { { 3, 0 }, { 4, 0 }, { 3, 1 }, { 4, 1 } } }, new Piece[] { Piece.O, Piece.T, Piece.L }, 5 ));
         //level 7
         levels.Add(new LevelData(1, 0, new int[,] { { 4, 5 }, { 5, 5 }, { 4, 6 }, { 5, 6 }, { 4, 7 }, { 5, 7 } }, 0.05f, 5));
         //level 8
@@ -192,21 +238,70 @@ public class ObjectiveManager : MonoBehaviour
         //level 20
         levels.Add(new LevelData());
     }
+
     public void StartLevel(int level)
     {
         currentLevel = level;
+        if (!PlayerPrefs.HasKey("Skip Tutorial") || PlayerPrefs.GetInt("Skip Tutorial") == 0)
+        {
+            for(int i = 0; i < tutorials.Count; i++)
+            {
+                if (tutorials[i].precedingLevel == currentLevel)
+                {
+                    StartTutorial(i);
+                    return;
+                }
+            }
+        }
+        onTutorial = false;
+        Debug.Log(level);
         tipText.SetTip(levels[level].tip);
         levelText.text = "Level " + (level + 1);
         bufferText.text = "0/" + levels[currentLevel].allowedBuffers + " buffers used.";
         bufferText.color = Color.green;
         boardManager.ClearBoard();
         GenerateTiles(levels[level]);
-        boardManager.BeginLevel(levels[level].startTop,levels[level].startSpeed);
+        boardManager.BeginLevel(levels[level].startTop, levels[level].startSpeed);
     }
+
+    public void StartTutorial(int level)
+    {
+        onTutorial = true;
+        currentLevel = level;
+        tipText.SetTip(tutorials[level].baseLevel.tip);
+        levelText.text = "Tutorial " + (level + 1);
+        bufferText.text = "0/" + tutorials[currentLevel].baseLevel.allowedBuffers + " buffers used.";
+        bufferText.color = Color.green;
+        boardManager.ClearBoard();
+        GenerateTiles(tutorials[level].baseLevel);
+        for(int i = 0; i < tutorials[level].pieceLocations.Length; i++)
+        {
+            int[,] locations = tutorials[level].pieceLocations[i];
+            Debug.Log(locations.GetLength(0));
+            for(int j = 0; j < locations.GetLength(0); j++)
+            {
+                Debug.Log("Getting location number " + j + " for piece type " + i);
+                boardManager.SetTile(locations[j, 0], locations[j, 1], TileState.Filled, (Piece)i);
+            }
+        }
+        boardManager.BeginLevel(tutorials[level].baseLevel.startTop, tutorials[level].baseLevel.startSpeed);
+        if (tutorials[level].initialQueue.Length == 0)
+            return;
+        pieceMovement.GetNewPiece(tutorials[level].initialQueue[0]);
+        for(int i = 1; i < Mathf.Min(boardManager.nextPieces.Count + 1, tutorials[level].initialQueue.Length); i++)
+        {
+            boardManager.nextPieces[i - 1] = tutorials[level].initialQueue[i];
+        }
+        boardManager.UpdateNextQueue();
+    }
+
     public bool CheckObjective()
     {
         bool reqTilesFilled = true;
-        foreach(int[] tiles in levels[currentLevel].requiredTiles)
+        LevelData level = levels[currentLevel];
+        if (onTutorial)
+            level = tutorials[currentLevel].baseLevel;
+        foreach(int[] tiles in level.requiredTiles)
         {
             switch(boardManager.GetTile(tiles[0],tiles[1])?.State)
             {
@@ -226,9 +321,9 @@ public class ObjectiveManager : MonoBehaviour
             }
         }
         int buffers = 0;
-        for (int i = 0; i < levels[currentLevel].bufferTiles.Count; i++)
+        for (int i = 0; i < level.bufferTiles.Count; i++)
         {
-            switch (boardManager.GetTile(levels[currentLevel].bufferTiles[i][0], levels[currentLevel].bufferTiles[i][1])?.State)
+            switch (boardManager.GetTile(level.bufferTiles[i][0], level.bufferTiles[i][1])?.State)
             {
                 case TileState.Blocked:
                     //fail the level
@@ -244,13 +339,22 @@ public class ObjectiveManager : MonoBehaviour
                     return false;
             }
         }
-        bufferText.text = buffers + "/" + levels[currentLevel].allowedBuffers + " buffers used.";
-        bufferText.color = buffers > levels[currentLevel].allowedBuffers ? Color.red : Color.green;
-        return reqTilesFilled && buffers <= levels[currentLevel].allowedBuffers;
+        bufferText.text = buffers + "/" + level.allowedBuffers + " buffers used.";
+        bufferText.color = buffers > level.allowedBuffers ? Color.red : Color.green;
+        return reqTilesFilled && buffers <= level.allowedBuffers;
     }
     public bool GoToNextLevel()
     {
-        currentLevel++;
+        if (onTutorial)
+        {
+            currentLevel = tutorials[currentLevel].precedingLevel;
+            PlayerPrefs.SetInt("Skip Tutorial", 1);
+        }
+        else
+        {
+            currentLevel++;
+            PlayerPrefs.SetInt("Skip Tutorial", 0);
+        }
         if (levels.Count <= currentLevel)
         {
             return false;

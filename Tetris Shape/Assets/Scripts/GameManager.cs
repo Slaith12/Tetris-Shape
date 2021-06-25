@@ -43,7 +43,7 @@ public class GameManager : MonoBehaviour
                 pieceMovement.enabled = false;
                 break;
             case "Restart":
-                objectiveManager.StartLevel(objectiveManager.currentLevel);
+                objectiveManager.Restart();
                 goto case "Resume";
             case "Resume":
                 pauseScreen.SetActive(false);
