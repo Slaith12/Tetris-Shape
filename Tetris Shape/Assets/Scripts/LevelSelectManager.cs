@@ -14,15 +14,26 @@ public class LevelSelectManager : MonoBehaviour
     {
         if(!PlayerPrefs.HasKey("Unlocked Levels"))
         {
-            PlayerPrefs.SetInt("Unlocked Levels", 0);
+            PlayerPrefs.SetInt("Unlocked Levels", 15);
         }
-        for (int i = 0; i <= Mathf.Min(PlayerPrefs.GetInt("Unlocked Levels"), 19); i++)
+        for (int i = 0; i <= Mathf.Min(PlayerPrefs.GetInt("Unlocked Levels"), 15); i++)
         {
             RectTransform newLevel = (RectTransform)Instantiate(level, levelContainer).transform;
-            newLevel.anchoredPosition = new Vector2(((i % 5) - 2) * 200, ((i / 5) - 1.5f) * -100f);
+            newLevel.anchoredPosition = new Vector2(((i % 4) - 1.5f) * 200, ((i / 4) - 2f) * -100f);
             int placeholder = i;
             newLevel.GetComponent<Button>().onClick.AddListener( () => { LoadLevel(placeholder); }); //apparently, it doesn't consider what the number in the function is until it is called, so it was always called with i = 20.
             newLevel.GetComponentInChildren<Text>().text = "Level " + (i + 1);
+        }
+        if(PlayerPrefs.GetInt("Unlocked Levels") > 15)
+        {
+            for(int i = 0; i < 4; i++)
+            {
+                RectTransform newLevel = (RectTransform)Instantiate(level, levelContainer).transform;
+                newLevel.anchoredPosition = new Vector2((i - 1.5f) * 200, -200f);
+                int placeholder = 16 + i;
+                newLevel.GetComponent<Button>().onClick.AddListener(() => { LoadLevel(placeholder); }); //apparently, it doesn't consider what the number in the function is until it is called, so it was always called with i = 20.
+                newLevel.GetComponentInChildren<Text>().text = "Challenge " + (i + 1);
+            }
         }
     }
     

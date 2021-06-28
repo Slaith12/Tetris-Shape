@@ -4,12 +4,6 @@ improve UI
 update readme
 playtest, add, reorder levels
 
-By Monday:
-nerf levels 11-13
-test 14
-change levels 15-16
-finish controls page
-
 maybe:
 consider changing levels 4 and 5
 consider adding level titles
