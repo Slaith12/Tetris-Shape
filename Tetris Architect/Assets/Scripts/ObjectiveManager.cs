@@ -5,27 +5,35 @@ using UnityEngine.UI;
 
 public class ObjectiveManager : MonoBehaviour
 {
-    public int currentLevel;
-    public bool onTutorial;
-    public float speedIncrease { get
-        {
-            if (onTutorial)
-                return tutorials[currentLevel].baseLevel.speedIncrease;
-            return levels[currentLevel].speedIncrease;
-        } }
-    public int lineDrop { get
-        {
-            if (onTutorial)
-                return tutorials[currentLevel].baseLevel.lineDrop;
-            return levels[currentLevel].lineDrop;
-        } }
     [SerializeField] Text bufferText;
     [SerializeField] Text levelText;
     [SerializeField] LevelTip tipText;
     [SerializeField] GameManager gameManager;
+    [SerializeField] GameObject restartWarning;
 
     List<LevelData> levels = new List<LevelData>();
     List<TutorialLevel> tutorials = new List<TutorialLevel>();
+    [HideInInspector] public int currentLevel;
+    [HideInInspector] public bool onTutorial;
+
+    public float speedIncrease
+    {
+        get
+        {
+            if (onTutorial)
+                return tutorials[currentLevel].baseLevel.speedIncrease;
+            return levels[currentLevel].speedIncrease;
+        }
+    }
+    public int lineDrop
+    {
+        get
+        {
+            if (onTutorial)
+                return tutorials[currentLevel].baseLevel.lineDrop;
+            return levels[currentLevel].lineDrop;
+        }
+    }
 
     BoardManager boardManager;
     PieceMovement pieceMovement;
@@ -107,6 +115,7 @@ public class ObjectiveManager : MonoBehaviour
         onTutorial = false;
         boardManager = GetComponent<BoardManager>();
         pieceMovement = GetComponent<PieceMovement>();
+        restartWarning.SetActive(false);
         InitLevels();
         if (!PlayerPrefs.HasKey("Current Level"))
             PlayerPrefs.SetInt("Current Level", 0);
@@ -117,13 +126,28 @@ public class ObjectiveManager : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.R))
         {
-            Restart();
+            ShowRestartWarning();
         }
+    }
+
+    public void ShowRestartWarning()
+    {
+        pieceMovement.enabled = false;
+        gameManager.disablePausing = true;
+        restartWarning.SetActive(true);
+    }
+
+    public void CloseRestartWarning()
+    {
+        pieceMovement.enabled = true;
+        gameManager.disablePausing = false;
+        restartWarning.SetActive(false);
     }
 
     public void Restart()
     {
-        gameManager.HandleButton("Resume");
+        CloseRestartWarning();
+        gameManager.Resume();
         if (onTutorial)
             StartTutorial(currentLevel);
         else

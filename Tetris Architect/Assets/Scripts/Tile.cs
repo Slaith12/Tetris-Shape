@@ -44,15 +44,27 @@ public class Tile : MonoBehaviour
         }
     }
     ObjectiveState obj;
+    public bool Ghost
+    {
+        get { return ghost; }
+        set
+        {
+            ghost = value;
+            ghostPiece.gameObject.SetActive(ghost);
+        }
+    }
+    bool ghost;
     public bool allowChanges;
     [SerializeField] SpriteRenderer border;
     [SerializeField] SpriteRenderer tileFilling;
+    [SerializeField] SpriteRenderer ghostPiece;
     [SerializeField] Color[] borders;
     [SerializeField] Color[] fillings;
     
-    void Start()
+    void Awake()
     {
         allowChanges = true;
+        Ghost = false;
     }
     
     void Update()

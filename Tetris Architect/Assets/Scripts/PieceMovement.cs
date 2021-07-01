@@ -23,6 +23,7 @@ public class PieceMovement : MonoBehaviour
     Piece piece;
     int rotation;
     int[][] pieceTiles = new int[4][];
+    Tile[] ghostTiles = new Tile[4];
 
     //constants
     const float SOFTDROPSPEED = 10;
@@ -186,26 +187,28 @@ public class PieceMovement : MonoBehaviour
                     {
                         pieceTiles[i] = new int[] { centerX + (i - 2), centerY };
                     }
-                    return;
+                    break;
                 case 1:
                     for (int i = 0; i < 4; i++)
                     {
                         pieceTiles[i] = new int[] { centerX, centerY - (i - 1) };
                     }
-                    return;
+                    break;
                 case 2:
                     for (int i = 0; i < 4; i++)
                     {
                         pieceTiles[i] = new int[] { centerX + (i - 2), centerY - 1 };
                     }
-                    return;
+                    break;
                 case 3:
                     for (int i = 0; i < 4; i++)
                     {
                         pieceTiles[i] = new int[] { centerX - 1, centerY - (i - 1) };
                     }
-                    return;
+                    break;
             }
+            UpdateGhost();
+            return;
         }
         if(piece == Piece.O)
         {
@@ -228,6 +231,7 @@ public class PieceMovement : MonoBehaviour
             }
             pieceTiles[i] = new int[] { centerX + offsetX, centerY + offsetY };
         }
+        UpdateGhost();
     }
 
     bool WallKick(bool clockwise)
@@ -386,11 +390,13 @@ public class PieceMovement : MonoBehaviour
         if(piece == Piece.I)
         {
             pieceTiles = new int[][] { new int[] { 3, topRow }, new int[] { 4, topRow }, new int[] { 5, topRow }, new int[] { 6, topRow } };
+            UpdateGhost();
             return;
         }
         if(piece == Piece.O)
         {
             pieceTiles = new int[][] { new int[] { 4, topRow }, new int[] { 5, topRow }, new int[] { 4, topRow + 1 }, new int[] { 5, topRow + 1 } };
+            UpdateGhost();
             return;
         }
         pieceTiles = new int[4][];
@@ -398,6 +404,7 @@ public class PieceMovement : MonoBehaviour
         {
             pieceTiles[i] = new int[] { centerX + tileOffsets[(int)piece, i, 0], centerY + tileOffsets[(int)piece, i, 1] };
         }
+        UpdateGhost();
     }
 
     bool ChangeLocation(int x, int y)
@@ -422,6 +429,7 @@ public class PieceMovement : MonoBehaviour
         }
         centerX += x;
         centerY += y;
+        UpdateGhost();
         return true;
     }
 
@@ -439,7 +447,7 @@ public class PieceMovement : MonoBehaviour
             {
                 int tileX = pieceCoords[0];
                 int tileY = pieceCoords[1];
-                if (tileY > 19)
+                if (tileY + y > 19)
                 {
                     if (tileX + x < 0 || tileX + x > 9)
                         return false;
@@ -454,6 +462,25 @@ public class PieceMovement : MonoBehaviour
             }
         }
         return true;
+    }
+
+    void UpdateGhost()
+    {
+        int height = 0;
+        while(IsValidMove(0, -(height + 1)))
+        {
+            height++;
+        }
+        for(int i = 0; i < 4; i++)
+        {
+            if (ghostTiles[i] != null)
+                ghostTiles[i].Ghost = false;
+        }
+        for(int i = 0; i < 4; i++)
+        {
+            ghostTiles[i] = boardManager.GetTile(pieceTiles[i][0], pieceTiles[i][1] - height);
+            ghostTiles[i].Ghost = true;
+        }
     }
 
     public void ResetPieces(int topRow)

@@ -5,13 +5,13 @@ using UnityEngine.UI;
 
 public class BoardManager : MonoBehaviour
 {
-    public Tile[,] tiles = new Tile[10,20];
     [SerializeField] GameObject emptyTile;
     [SerializeField] GameObject winScreen;
     [SerializeField] Text lineDropText;
     [SerializeField] Image[] pieceImages;
     public Sprite[] pieceSprites;
 
+    public Tile[,] tiles = new Tile[10, 20];
     public List<Piece> nextPieces; //this is literally a queue but i'm using a list instead. i don't know why
 
     int clearedLines;
@@ -30,7 +30,7 @@ public class BoardManager : MonoBehaviour
         {
             for(int j = 0; j < 20; j++)
             {
-                tiles[i,j] = Instantiate(emptyTile,transform).GetComponent<Tile>();
+                tiles[i,j] = Instantiate(emptyTile, transform).GetComponent<Tile>();
                 tiles[i,j].transform.position = new Vector3(i,j,0);
             }
         }

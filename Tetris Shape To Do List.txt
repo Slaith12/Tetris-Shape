@@ -3,6 +3,8 @@ homework:
 improve UI
 update readme
 playtest, add, reorder levels
+add last 3 levels
+IMPROVE VISUALS
 
 maybe:
 consider changing levels 4 and 5
