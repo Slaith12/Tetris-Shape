@@ -172,6 +172,7 @@ public class PieceMovement : MonoBehaviour
             SetRotation(rotation);
         }
         FillPieceTiles(TileState.Active);
+        UpdateGhost();
     }
 
     //Rotation Functions
@@ -207,7 +208,6 @@ public class PieceMovement : MonoBehaviour
                     }
                     break;
             }
-            UpdateGhost();
             return;
         }
         if(piece == Piece.O)
@@ -231,7 +231,6 @@ public class PieceMovement : MonoBehaviour
             }
             pieceTiles[i] = new int[] { centerX + offsetX, centerY + offsetY };
         }
-        UpdateGhost();
     }
 
     bool WallKick(bool clockwise)
@@ -353,6 +352,10 @@ public class PieceMovement : MonoBehaviour
     void PlacePiece()
     {
         holdCooldown = false;
+        foreach(Tile tile in ghostTiles)
+        {
+            tile.Ghost = false;
+        }
         if (piece == Piece.single)
         {
             Debug.Log("Filling in a single piece at line " + centerY + " column " + centerX);

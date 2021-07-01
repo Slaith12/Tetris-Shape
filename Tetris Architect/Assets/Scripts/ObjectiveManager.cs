@@ -40,7 +40,7 @@ public class ObjectiveManager : MonoBehaviour
 
     public struct LevelData
     {
-        public LevelData(int borderSize, int allowedBuffers, int[,] requiredTiles, float speedIncrease, int lineDrop, float startSpeed = 1, int startTop = 20, string tip = "")
+        public LevelData(int borderSize, int allowedBuffers, int[,] requiredTiles, string title, float speedIncrease, int lineDrop, float startSpeed = 1, int startTop = 20, string tip = "")
         {
             this.borderSize = borderSize;
             this.allowedBuffers = allowedBuffers;
@@ -50,16 +50,17 @@ public class ObjectiveManager : MonoBehaviour
                 reqTiles[i] = new int[] { requiredTiles[i, 0], requiredTiles[i, 1] };
             }
             this.requiredTiles = reqTiles;
-            this.speedIncrease = speedIncrease;
-            this.lineDrop = lineDrop;
             bufferTiles = new List<int[]>();
             generateBorders = true;
+            this.title = title;
+            this.speedIncrease = speedIncrease;
+            this.lineDrop = lineDrop;
             this.startSpeed = startSpeed;
             this.startTop = startTop;
             this.tip = tip;
         }
 
-        public LevelData(int[,] bufferTiles, int allowedBuffers, int[,] requiredTiles, float speedIncrease, int lineDrop, float startSpeed = 1, int startTop = 20, string tip = "")
+        public LevelData(int[,] bufferTiles, int allowedBuffers, int[,] requiredTiles, string title, float speedIncrease, int lineDrop, float startSpeed = 1, int startTop = 20, string tip = "")
         {
             this.borderSize = 0;
             this.allowedBuffers = allowedBuffers;
@@ -69,14 +70,15 @@ public class ObjectiveManager : MonoBehaviour
                 reqTiles[i] = new int[] { requiredTiles[i, 0], requiredTiles[i, 1] };
             }
             this.requiredTiles = reqTiles;
-            this.speedIncrease = speedIncrease;
-            this.lineDrop = lineDrop;
             this.bufferTiles = new List<int[]>();
             for (int i = 0; i < bufferTiles.GetLength(0); i++)
             {
                 this.bufferTiles.Add(new int[] { bufferTiles[i, 0], bufferTiles[i, 1] });
             }
             generateBorders = false;
+            this.title = title;
+            this.speedIncrease = speedIncrease;
+            this.lineDrop = lineDrop;
             this.startSpeed = startSpeed;
             this.startTop = startTop;
             this.tip = tip;
@@ -85,6 +87,7 @@ public class ObjectiveManager : MonoBehaviour
         public int allowedBuffers;
         public int[][] requiredTiles;
         public List<int[]> bufferTiles;
+        public string title;
         public float speedIncrease;
         public int lineDrop;
         public bool generateBorders;
@@ -95,18 +98,20 @@ public class ObjectiveManager : MonoBehaviour
 
     public struct TutorialLevel
     {
-        public TutorialLevel(LevelData baseLevel, int[][,] pieceLocations, Piece[] initialQueue, int precedingLevel)
+        public TutorialLevel(LevelData baseLevel, int[][,] pieceLocations, Piece[] initialQueue, int precedingLevel, string title)
         {
             this.baseLevel = baseLevel;
             this.pieceLocations = pieceLocations;
             this.initialQueue = initialQueue;
             this.precedingLevel = precedingLevel;
+            this.title = title;
         }
 
         public LevelData baseLevel;
-        public int[][,] pieceLocations;
+        public int[][,] pieceLocations; //each int[,] array corresponds to a different piece. it goes in the same order as the Piece enum.
         public Piece[] initialQueue;
         public int precedingLevel;
+        public string title;
     }
 
     // Use this for initilization
@@ -189,66 +194,68 @@ public class ObjectiveManager : MonoBehaviour
         levels.Add(new LevelData(1, 6, new int[,]{ { 3, 0 }, { 4, 0 }, { 5, 0 }, { 6, 0 },
                                                    { 3, 1 }, { 4, 1 }, { 5, 1 }, { 6, 1 },
                                                    { 3, 2 }, { 4, 2 }, { 5, 2 }, { 6, 2 },
-                                                   { 3, 3 }, { 4, 3 }, { 5, 3 }, { 6, 3 } }, 0.1f, 2));
+                                                   { 3, 3 }, { 4, 3 }, { 5, 3 }, { 6, 3 } }, "A Square of Squares", 0.1f, 2));
         //level 2
         levels.Add(new LevelData(1, 6, new int[,] { { 4, 3 }, { 5, 3 }, { 3, 2 }, { 4, 2 }, { 5, 2 }, { 6, 2 }, { 2, 1 }, { 3, 1 }, { 4, 1 }, { 5, 1 }, { 6, 1 }, { 7, 1 },
-                                                    { 1, 0 }, { 2, 0 }, { 3, 0 }, { 4, 0 }, { 5, 0 }, { 6, 0 }, { 7, 0 }, { 8, 0 } }, 0.1f, 3));
+                                                    { 1, 0 }, { 2, 0 }, { 3, 0 }, { 4, 0 }, { 5, 0 }, { 6, 0 }, { 7, 0 }, { 8, 0 } }, "The Pyramid", 0.1f, 3));
         //level 3
         levels.Add(new LevelData(1, 5, new int[,] { { 3, 4 }, { 4, 4 }, { 5, 4 }, { 6, 4 },
                                                      { 3, 5 }, { 4, 5 }, { 5, 5 }, { 6, 5 },
                                                      { 3, 6 }, { 4, 6 }, { 5, 6 }, { 6, 6 },
-                                                     { 3, 7 }, { 4, 7 }, { 5, 7 }, { 6, 7 } }, 0.2f, 3));
+                                                     { 3, 7 }, { 4, 7 }, { 5, 7 }, { 6, 7 } }, "The Floating Box", 0.2f, 3));
         //level 4
-        levels.Add(new LevelData(2, 10, new int[,] { { 3, 5 }, { 4, 6 }, { 5, 7 }, { 6, 8 }, { 6, 7 }, { 6, 6 }, { 6, 5 }, { 6, 4 }, { 6, 3 }, { 6, 2 }, { 5, 3 }, { 4, 4 }, { 4, 5 }, { 5, 4 }, { 5, 5 }, { 5, 6 } }, 0.2f, 3));
+        levels.Add(new LevelData(2, 10, new int[,] { { 3, 5 }, { 4, 6 }, { 5, 7 }, { 6, 8 }, { 6, 7 }, { 6, 6 }, { 6, 5 }, { 6, 4 }, { 6, 3 }, { 6, 2 }, { 5, 3 }, { 4, 4 }, { 4, 5 }, { 5, 4 }, { 5, 5 }, { 5, 6 } }, "Another Triangle", 0.2f, 3));
         //level 5
         levels.Add(new LevelData(1, 10, new int[,] { { 4, 3 }, { 5, 3 }, { 5, 4 }, { 6, 4 }, { 6, 5 },
                                                      { 7, 5 }, { 7, 6 }, { 6, 6 }, { 6, 7 }, { 5, 7 },
-                                                     { 5, 8 }, { 4, 8 }, { 4, 7 }, { 3, 7 }, { 3, 6 }, { 2, 6 }, { 2, 5 }, { 3, 5 }, { 3, 4 }, { 4, 4 } }, 0.3f, 2));
+                                                     { 5, 8 }, { 4, 8 }, { 4, 7 }, { 3, 7 }, { 3, 6 }, { 2, 6 }, { 2, 5 }, { 3, 5 }, { 3, 4 }, { 4, 4 } }, "The Ringer", 0.3f, 2));
         //level 6
-        levels.Add(new LevelData(1, 0, new int[,] { { 4, 5 } }, 0.1f, 3));
+        levels.Add(new LevelData(1, 0, new int[,] { { 4, 5 } }, "Just One Tile", 0.1f, 3));
         //tutorial for level 6
-        tutorials.Add(new TutorialLevel(levels[5], new int[][,] { new int[,] { { 0, 0 }, { 0, 1 }, { 1, 0 }, { 2, 0 }, { 9, 7 }, { 9, 8 }, { 8, 8 }, { 7, 8 } },
-                                                                  new int[,] { { 1, 1 }, { 2, 1 }, { 2, 2 }, { 3, 2 }, { 7, 5 }, { 8, 5 }, { 8, 6 }, { 9, 6 } },
-                                                                  new int[,] { { 1, 2 }, { 1, 3 }, { 2, 3 }, { 3, 3 }, { 6, 1 }, { 7, 1 }, { 8, 1 }, { 8, 2 }, { 2, 7 }, { 3, 7 }, { 4, 7 }, { 4, 8 } },
-                                                                  new int[,] { { 1, 4 }, { 1, 5 }, { 2, 5 }, { 2, 6 }, { 7, 2 }, { 7, 3 }, { 8, 3 }, { 8, 4 } },
-                                                                  new int[,] { },
-                                                                  new int[,] { { 0, 2 }, { 0, 3 }, { 0, 4 }, { 0, 5 }, { 6, 0 }, { 7, 0 }, { 8, 0 }, { 9, 0 }, { 5, 7 }, { 6, 7 }, { 7, 7 }, { 8, 7 }, { 9, 1 }, { 9, 2 }, { 9, 3 }, { 9, 4 } },
-                                                                  new int[,] { { 3, 0 }, { 4, 0 }, { 3, 1 }, { 4, 1 } } }, new Piece[] { Piece.O, Piece.T, Piece.L }, 5 ));
+        tutorials.Add(new TutorialLevel(levels[5], new int[][,] { new int[,] { { 0, 0 }, { 0, 1 }, { 1, 0 }, { 2, 0 }, { 9, 7 }, { 9, 8 }, { 8, 8 }, { 7, 8 } }, //J piece
+                                                                  new int[,] { { 1, 1 }, { 2, 1 }, { 2, 2 }, { 3, 2 }, { 7, 5 }, { 8, 5 }, { 8, 6 }, { 9, 6 } }, //S piece
+                                                                  new int[,] { { 1, 2 }, { 1, 3 }, { 2, 3 }, { 3, 3 }, { 6, 1 }, { 7, 1 }, { 8, 1 }, { 8, 2 }, { 2, 7 }, { 3, 7 }, { 4, 7 }, { 4, 8 } }, //L Piece
+                                                                  new int[,] { { 1, 4 }, { 1, 5 }, { 2, 5 }, { 2, 6 }, { 7, 2 }, { 7, 3 }, { 8, 3 }, { 8, 4 } }, //Z piece
+                                                                  new int[,] { }, //T piece
+                                                                  new int[,] { { 0, 2 }, { 0, 3 }, { 0, 4 }, { 0, 5 }, { 6, 0 }, { 7, 0 }, { 8, 0 }, { 9, 0 }, { 5, 7 }, { 6, 7 }, { 7, 7 }, { 8, 7 }, { 9, 1 }, { 9, 2 }, { 9, 3 }, { 9, 4 } }, //I Piece
+                                                                  new int[,] { { 3, 0 }, { 4, 0 }, { 3, 1 }, { 4, 1 } } }, new Piece[] { Piece.O, Piece.T, Piece.L }, 5, "The Magical Floating Orange." ));
         //level 7
-        levels.Add(new LevelData(1, 0, new int[,] { { 4, 5 }, { 5, 5 }, { 4, 6 }, { 5, 6 }, { 4, 7 }, { 5, 7 } }, 0.05f, 5));
+        levels.Add(new LevelData(1, 0, new int[,] { { 4, 5 }, { 5, 5 }, { 4, 6 }, { 5, 6 }, { 4, 7 }, { 5, 7 } }, "Half and Whole", 0.05f, 5));
         //level 8
         levels.Add(new LevelData(new int[,] { { 2, 3 }, { 2, 4 }, { 2, 5 }, { 2, 6 }, { 2, 7 }, { 2, 8 }, { 3, 8 }, { 4, 8 }, { 5, 8 }, { 6, 8 }, { 7, 8 }, { 7, 7 }, { 7, 6 }, { 7, 5 }, { 7, 4 }, { 7, 3 }, { 6, 3 }, { 5, 3 }, { 4, 3 }, { 3, 3 }, { 2, 3 } },
-                                 0, new int[,] { { 4, 6 }, { 4, 5 }, { 5, 5 }, { 5, 6 } }, 0.2f, 3));
+                                 0, new int[,] { { 4, 6 }, { 4, 5 }, { 5, 5 }, { 5, 6 } }, "The Vault", 0.2f, 3));
         //level 9
-        levels.Add(new LevelData(new int[,] { { 0, 0 }, { 1, 1 }, { 2, 2 }, { 3, 3 }, { 4, 4 }, { 5, 5 }, { 6, 6 }, { 7, 7 }, { 8, 8 }, { 9, 9 }, { 1, 0 }, { 2, 1 }, { 3, 2 }, { 4, 3 }, { 5, 4 }, { 6, 5 }, { 7, 6 }, { 8, 7 }, { 9, 8 } }, 0, new int[,] { { 3, 7 }, { 5, 7 }, { 4, 6 }, { 4, 8 } }, 0.1f, 3));
+        levels.Add(new LevelData(new int[,] { { 0, 0 }, { 1, 1 }, { 2, 2 }, { 3, 3 }, { 4, 4 }, { 5, 5 }, { 6, 6 }, { 7, 7 }, { 8, 8 }, { 9, 9 }, { 1, 0 }, { 2, 1 }, { 3, 2 }, { 4, 3 }, { 5, 4 }, { 6, 5 }, { 7, 6 }, { 8, 7 }, { 9, 8 } }, 0,
+                                 new int[,] { { 2, 8 }, { 4, 8 }, { 3, 7 }, { 3, 9 }, { 8, 2 }, { 8, 4 }, { 7, 3 }, { 9, 3 } }, "One in a Hundred", 0.1f, 3));
         //level 10
         levels.Add(new LevelData(new int[,] { { 0, 0 }, { 9, 0 }, { 1, 1 }, { 8, 1 }, { 2, 2 }, { 7, 2 }, { 3, 3 }, { 6, 3 }, { 4, 4 }, { 5, 4 },
                                               { 5, 5 }, { 4, 5 }, { 6, 6 }, { 3, 6 }, { 7, 7 }, { 2, 7 }, { 8, 8 }, { 1, 8 }, { 9, 9 }, { 0, 9 } }, 0,
-                                 new int[,] { { 4, 18 }, { 5, 18 } }, 0, 20));
+                                 new int[,] { { 4, 18 }, { 5, 18 } }, "Double Cross", 0, 20));
         //level 11
-        levels.Add(new LevelData(1, 0, new int[,] { { 2, 8 }, { 7, 8 } }, 0.1f, 4));
+        levels.Add(new LevelData(1, 0, new int[,] { { 2, 8 }, { 7, 8 } }, "The Abyss Stares Back", 0.1f, 4));
         //level 12
         levels.Add(new LevelData(new int[,] { { 3, 7 }, { 6, 7 }, { 2, 8 }, { 4, 8 }, { 7, 8 }, { 5, 8 }, { 1, 9 }, { 5, 9 }, { 8, 9 }, { 4, 9 },
-                                              { 0, 10 }, { 3, 10 }, { 6, 10 }, { 9, 10 } }, 0, new int[,] { { 1, 10 }, { 8, 10 } }, 0.1f, 4));
+                                              { 0, 10 }, { 3, 10 }, { 6, 10 }, { 9, 10 } }, 0,
+                                 new int[,] { { 1, 10 }, { 8, 10 } }, "A Poorly Drawn W (I Tried)", 0.1f, 4, tip: "It's actually 2 V's intersecting very weirdly. Oh you probably came here for a hint. The place where you go through the buffer will be very important, since it determines how you'll clear the line and how you'll build to the objective."));
         //level 13
         levels.Add(new LevelData(new int[,] { { 4, 0 }, { 5, 0 }, { 3, 1 }, { 6, 1 }, { 2, 2 }, { 7, 2 }, { 1, 3 }, { 8, 3 }, { 0, 4 }, { 9, 4 },
                                               { 4, 9 }, { 5, 9 }, { 3, 8 }, { 6, 8 }, { 2, 7 }, { 7, 7 }, { 1, 6 }, { 8, 6 }, { 0, 5 }, { 9, 5 } }, 0,
-                                 new int[,] { { 3, 4 }, { 3, 5 }, { 4, 6 }, { 5, 6 }, { 6, 5 }, { 6, 4 }, { 5, 3 }, { 4, 3 }, { 2, 10 }, { 7, 10 } }, 0.1f, 4));
+                                 new int[,] { { 3, 4 }, { 3, 5 }, { 4, 6 }, { 5, 6 }, { 6, 5 }, { 6, 4 }, { 5, 3 }, { 4, 3 }, { 2, 10 }, { 7, 10 } }, "Open Wide!", 0.1f, 4));
         //level 14
         levels.Add(new LevelData(1, 5, new int[,] { { 3, 3 }, { 4, 3 }, { 5, 3 }, { 6, 3 }, { 7, 3 }, { 3, 4 }, { 4, 4 }, { 5, 4 }, { 6, 4 }, { 6, 5 }, { 6, 6 }, { 6, 7 }, { 6, 8 }, { 6, 9 },
-                                                    { 7, 4 }, { 7, 5 }, { 7, 6 }, { 7, 7 }, { 7, 8 }, { 7, 9 }, { 5, 9 }, { 4, 9 }, { 3, 9 }, { 7, 10 }, { 6, 10 }, { 5, 10 }, { 4, 10 }, { 3, 10 } }, 0.2f, 2));
+                                                    { 7, 4 }, { 7, 5 }, { 7, 6 }, { 7, 7 }, { 7, 8 }, { 7, 9 }, { 5, 9 }, { 4, 9 }, { 3, 9 }, { 7, 10 }, { 6, 10 }, { 5, 10 }, { 4, 10 }, { 3, 10 } }, "Follow the Curve", 0.2f, 2, tip: "It's very hard to cleanly make a 2 tile wide line. Use buffers carefully."));
         //level 15
         levels.Add(new LevelData(new int[,] { { 4, 0 }, { 4, 1 }, { 4, 2 }, { 4, 3 }, { 4, 4 }, { 4, 5 }, { 4, 6 }, { 5, 6 }, { 6, 6 }, { 7, 6 }, { 8, 6 }, { 8, 7 }, { 9, 7 }, { 9, 8 },
                                               { 9, 14 }, { 9, 15 }, { 8, 15 }, { 8, 16 }, { 7, 16 }, { 6, 16 }, { 5, 16 }, { 4, 16 }, { 3, 16 }, { 2, 16 }, { 1, 16 }, { 0, 16 }, { 5, 10 }, { 6, 10 }, { 5, 11 }, { 6, 11 }, { 5, 12 }, { 6, 12 } }, 0, 
                                  new int[,] { { 2, 0 }, { 3, 0 }, { 2, 1 }, { 3, 1 }, { 2, 2 }, { 3, 2 }, { 2, 3 }, { 3, 3 }, { 2, 4 }, { 3, 4 }, { 2, 5 }, { 3, 5 }, { 2, 6 }, { 3, 6 }, { 2, 7 }, { 3, 7 },
                                               { 2, 8 }, { 3, 8 }, { 2, 9 }, { 3, 9 }, { 2, 10 }, { 3, 10 }, { 2, 11 }, { 3, 11 }, { 2, 12 }, { 3, 12 }, { 2, 13 }, { 3, 13 }, { 2, 14 }, { 3, 14 }, { 2, 15 }, { 3, 15 },
                                               { 4, 7 }, { 4, 8 }, { 5, 7 }, { 5, 8 }, { 6, 7 }, { 6, 8 }, { 7, 7 }, { 7, 8 }, { 7, 9 }, { 8, 8 }, { 8, 9 }, { 8, 10 }, { 8, 11 }, { 8, 12 }, { 8, 13 },
-                                              { 9, 9 }, { 9, 10 }, { 9, 11 }, { 9, 12 }, { 9, 13 }, { 7, 13 }, { 8, 14 }, { 7, 14 }, { 6, 14 }, { 5, 14 }, { 4, 14 }, { 7, 15 }, { 6, 15 }, { 5, 15 }, { 4, 15 } }, 0.1f, 4));
+                                              { 9, 9 }, { 9, 10 }, { 9, 11 }, { 9, 12 }, { 9, 13 }, { 7, 13 }, { 8, 14 }, { 7, 14 }, { 6, 14 }, { 5, 14 }, { 4, 14 }, { 7, 15 }, { 6, 15 }, { 5, 15 }, { 4, 15 } }, "P for Perfect", 0.1f, 4));
         //level 16
         levels.Add(new LevelData(1, 4, new int[,] { { 4, 0 }, { 5, 0 }, { 8, 0 }, { 9, 0 }, { 4, 1 }, { 5, 1 }, { 8, 1 }, { 9, 1 }, { 4, 2 }, { 5, 2 }, { 8, 2 }, { 9, 2 }, { 4, 3 }, { 5, 3 }, { 8, 3 }, { 9, 3 }, { 4, 4 }, { 5, 4 }, { 8, 4 }, { 9, 4 }, { 6, 4 }, { 7, 4 }, { 6, 5 }, { 7, 5 },
                                                     { 4, 5 }, { 5, 5 }, { 8, 5 }, { 9, 5 }, { 4, 6 }, { 5, 6 }, { 8, 6 }, { 9, 6 }, { 4, 7 }, { 5, 7 }, { 8, 7 }, { 9, 7 }, { 4, 8 }, { 5, 8 }, { 8, 8 }, { 9, 8 }, { 4, 9 }, { 5, 9 }, { 8, 9 }, { 9, 9 }, { 6, 8 }, { 7, 8 }, { 6, 9 }, { 7, 9 },
                                                     { 2, 6 }, { 3, 6 }, { 2, 7 }, { 3, 7 }, { 2, 8 }, { 3, 8 }, { 2, 9 }, { 3, 9 }, { 2, 10 }, { 3, 10 }, { 2, 11 }, { 3, 11 }, { 2, 12 }, { 3, 12 }, { 2, 13 }, { 3, 13 },
-                                                    { 0, 14 }, { 1, 14 }, { 2, 14 }, { 3, 14 }, { 4, 14 }, { 5, 14 }, { 0, 15 }, { 1, 15 }, { 2, 15 }, { 3, 15 }, { 4, 15 }, { 5, 15 } }, 0.05f, 7));
+                                                    { 0, 14 }, { 1, 14 }, { 2, 14 }, { 3, 14 }, { 4, 14 }, { 5, 14 }, { 0, 15 }, { 1, 15 }, { 2, 15 }, { 3, 15 }, { 4, 15 }, { 5, 15 } }, "Thanks For Playing", 0.05f, 7));
         //Challenge Level 1
         levels.Add(new LevelData(new int[,] { { 0, 0 }, { 1, 0 }, { 2, 0 }, { 0, 1 }, { 1, 1 }, { 2, 1 }, { 9, 0 }, { 8, 0 }, { 7, 0 }, { 9, 1 }, { 8, 1 }, { 7, 1 },
                                               { 3, 2 }, { 4, 2 }, { 5, 2 }, { 6, 2 }, { 3, 3 }, { 4, 3 }, { 5, 3 }, { 6, 3 },
@@ -259,11 +266,14 @@ public class ObjectiveManager : MonoBehaviour
                                               { 0, 12 }, { 1, 12 }, { 2, 12 }, { 0, 13 }, { 1, 13 }, { 2, 13 }, { 9, 12 }, { 8, 12 }, { 7, 12 }, { 9, 13 }, { 8, 13 }, { 7, 13 },
                                               { 3, 14 }, { 4, 14 }, { 5, 14 }, { 6, 14 }, { 3, 15 }, { 4, 15 }, { 5, 15 }, { 6, 15 },
                                               { 0, 16 }, { 1, 16 }, { 2, 16 }, { 0, 17 }, { 1, 17 }, { 2, 17 }, { 9, 16 }, { 8, 16 }, { 7, 16 }, { 9, 17 }, { 8, 17 }, { 7, 17 },
-                                              { 3, 18 }, { 6, 18 }, { 3, 19 }, { 4, 19 }, { 5, 19 }, { 6, 19 }}, 0, new int[,] { { 4, 18 }, { 5, 18 } }, 0.05f, 8));
+                                              { 3, 18 }, { 6, 18 }, { 3, 19 }, { 4, 19 }, { 5, 19 }, { 6, 19 }}, 3, new int[,] { { 4, 18 }, { 5, 18 } }, "The Great Tower", 0.05f, 12, tip: "Remember when you had to clear a line to get past a barrier? This is just like that, only you have to do it 8 times with very little space. If you feel RNG dealt you a bad hand, you can use a buffer to skip a section or clear lines to cycle through pieces."));
         //Challenge Level 2
-        levels.Add(new LevelData());
+        levels.Add(new LevelData(new int[,] { { 0, 7 }, { 1, 8 }, { 2, 7 }, { 3, 8 }, { 4, 7 }, { 5, 8 }, { 6, 7 }, { 7, 8 }, { 8, 7 }, { 9, 8 } }, 0, new int[,] { { 4, 10 }, { 4, 11 }, { 5, 10 }, { 5, 11 } }, "The Impenetrable Wall", 0.1f, 10, tip: "This is much harder than it initially seems. It may be easy to get to the first layer and place a piece to set up for the second layer, but clearing the line without making artifacts in either layer will be difficult. This time, you'll need to build up over the wall a bit and plan out how the lines will be cleared."));
         //Challenge Level 3
-        levels.Add(new LevelData());
+        levels.Add(new LevelData(1, 2, new int[,] { { 1, 0 }, { 2, 0 }, { 1, 1 }, { 2, 1 }, { 1, 2 }, { 2, 2 }, { 1, 3 }, { 2, 3 }, { 1, 4 }, { 2, 4 }, { 1, 5 }, { 2, 5 }, { 0, 4 }, { 0, 5 }, { 3, 4 }, { 3, 5 },
+                                                    { 4, 4 }, { 5, 4 }, { 4, 5 }, { 5, 5 }, { 4, 6 }, { 5, 6 }, { 4, 7 }, { 5, 7 }, { 4, 8 }, { 5, 8 }, { 4, 9 }, { 5, 9 }, { 4, 10 }, { 5, 10 },
+                                                    { 1, 9 }, { 1, 10 }, { 2, 9 }, { 2, 10 }, { 3, 9 }, { 3, 10 }, { 6, 9 }, { 6, 10 }, { 6, 12 }, { 6, 13 },
+                                                    { 7, 13 }, { 8, 13 }, { 7, 12 }, { 8, 12 }, { 7, 11 }, { 8, 11 }, { 7, 10 }, { 8, 10 }, { 7, 9 }, { 8, 9 }, { 7, 8 }, { 8, 8 }, { 7, 7 }, { 8, 7 }, { 7, 6 }, { 8, 6 }, { 7, 5 }, { 8, 5 }, { 7, 4 }, { 8, 4 }, { 7, 3 }, { 8, 3 }, { 7, 2 }, { 8, 2 }, { 7, 1 }, { 8, 1 }, { 5, 1 }, { 5, 2 }, { 6, 1 }, { 6, 2 } }, "The Snaking Maze", 0.1f, 5, tip: "Towering straight down is impossible in Tetris. Instead, try building across the gap at the bottom and clearing a line to get a foothold there. That way, you can use the buffers for something else."));
         //Challenge Level 4
         levels.Add(new LevelData());
     }
@@ -286,9 +296,9 @@ public class ObjectiveManager : MonoBehaviour
         Debug.Log(level);
         tipText.SetTip(levels[level].tip);
         if (level < 16)
-            levelText.text = "Level " + (level + 1);
+            levelText.text = "Level " + (level + 1) + ": " + levels[level].title;
         else
-            levelText.text = "Challenge Level " + (level - 15);
+            levelText.text = "Challenge Level " + (level - 15) + ": " + levels[level].title;
         bufferText.text = "0/" + levels[currentLevel].allowedBuffers + " buffers used.";
         bufferText.color = Color.green;
         boardManager.ClearBoard();
@@ -301,7 +311,7 @@ public class ObjectiveManager : MonoBehaviour
         onTutorial = true;
         currentLevel = level;
         tipText.SetTip(tutorials[level].baseLevel.tip);
-        levelText.text = "Tutorial " + (level + 1);
+        levelText.text = "Tutorial " + (level + 1) + ": " + tutorials[level].title;
         bufferText.text = "0/" + tutorials[currentLevel].baseLevel.allowedBuffers + " buffers used.";
         bufferText.color = Color.green;
         boardManager.ClearBoard();

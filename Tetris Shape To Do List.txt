@@ -3,7 +3,7 @@ homework:
 improve UI
 update readme
 playtest, add, reorder levels
-add last 3 levels
+add last level
 IMPROVE VISUALS
 
 maybe:
