@@ -3,14 +3,12 @@ homework:
 improve UI
 update readme
 playtest, add, reorder levels
-add last level
-IMPROVE VISUALS
+IMPROVE VISUALS (add font, change ghost, add pause button)
 
 maybe:
-consider changing levels 4 and 5
-consider adding level titles
 consider audio
 
+Original plans for levels:
 level 1: learn basic mechanics
 level 2: harder version of level 1
 level 3: mid-air objective
@@ -21,7 +19,7 @@ level 7: harder version of level 6
 level 8: buffers become barriers to make towering to the objective harder (not borders)
 level 9: level 5 but with the new concept from level 8
 level 10: put objectives close to top
-level 11: 
+level 11: a super hard level that is eventually moved to the last challenge level AFTER getting nerfed. How did I originally think it was easy?
 level 12: seperate objective regions
 level 13: 
 level 14: 
