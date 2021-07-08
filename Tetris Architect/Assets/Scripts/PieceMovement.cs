@@ -8,6 +8,7 @@ public class PieceMovement : MonoBehaviour
     //references
     BoardManager boardManager;
     [SerializeField] Image holdImage;
+    [SerializeField] GameObject loseScreen;
 
     //objective related variables
     public float gravitySpeed;
@@ -26,7 +27,7 @@ public class PieceMovement : MonoBehaviour
     Tile[] ghostTiles = new Tile[4];
 
     //constants
-    const float SOFTDROPSPEED = 10;
+    const float SOFTDROPSPEED = 10; //the speed multiplier of soft dropping
     const float DASDELAY = 0.5f; //the delay between when the button starts getting held and when DAS starts
     const float DASRATE = 0.05f; //the delay between each DAS movement
     /// <summary>
@@ -38,10 +39,12 @@ public class PieceMovement : MonoBehaviour
                                         { { 1, 1 }, { 1, 0 }, { 0, 0 }, { -1, 0 } }, //L piece offsets
                                         { { -1, 1 }, { 0, 1 }, { 0, 0 }, { 1, 0 } }, //Z piece offsets
                                         { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, 0 } } }; //T piece offsets
-
+    /// <summary>
+    /// If you rotate a piece and it would collide with other tiles, the piece shifts to these offsets to try to get in a clear space.
+    /// </summary>
     readonly int[,] wallKickOffsets = new int[,] { { 0, 0 }, { -1, 0 }, { -1, 1 }, { 0, -2 }, { -1, -2 } };
     readonly int[,,] iPieceKickOffsets = new int[,,] { { { 0, 0 } , { -2, 0 }, { 1, 0 }, { -2, -1 } , { 1, 2 } },
-                                                       { { 0, 0 }, { -1, 0 }, { 2, 0 }, { -1, 2 }, { 2, -1 } } };
+                                                       { { 0, 0 }, { -1, 0 }, { 2, 0 }, { -1, 2 }, { 2, -1 } } }; // The I piece uses different offsets than other pieces for wall kicks
 
     //misc
     public Piece heldPiece;
@@ -51,6 +54,7 @@ public class PieceMovement : MonoBehaviour
     public void Init()
     {
         boardManager = GetComponent<BoardManager>();
+        loseScreen.SetActive(false);
         holdImage.color = Color.clear;
         heldPiece = Piece.single;
         DASTimer = 0;
@@ -58,7 +62,7 @@ public class PieceMovement : MonoBehaviour
         topRow = 20;
         //GetNewPiece(Piece.I);
     }
-    
+
     void Update()
     {
         Gravity();
@@ -316,6 +320,16 @@ public class PieceMovement : MonoBehaviour
 
     void Gravity()
     {
+        if (Input.GetKeyUp(KeyCode.DownArrow))
+        {
+            gravityTimer = 1 / gravitySpeed; //since the piece immediately goes down when the down arrow is pressed, this can't be abused for stalling
+        }
+
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            gravityTimer = 0f;
+        }
+
         if (Input.GetKey(KeyCode.DownArrow))
         {
             gravityTimer -= Time.deltaTime * SOFTDROPSPEED;
@@ -324,19 +338,21 @@ public class PieceMovement : MonoBehaviour
         {
             gravityTimer -= Time.deltaTime;
         }
+
         if (gravityTimer <= 0f)
         {
             if (!ChangeLocation(0, -1))
             {
                 PlacePiece();
             }
-            gravityTimer = 1 / gravitySpeed;
+            gravityTimer += 1 / gravitySpeed;
         }
+
         if(Input.GetKeyDown(KeyCode.Space))
         {
             while (ChangeLocation(0, -1)) ;
             PlacePiece();
-            gravityTimer = 1 / gravitySpeed;
+            gravityTimer += 1 / gravitySpeed;
         }
     }
 
@@ -352,9 +368,10 @@ public class PieceMovement : MonoBehaviour
     void PlacePiece()
     {
         holdCooldown = false;
-        foreach(Tile tile in ghostTiles)
+        foreach(Tile ghostTile in ghostTiles)
         {
-            tile.Ghost = false;
+            if(ghostTile != null)
+                ghostTile.Ghost = false;
         }
         if (piece == Piece.single)
         {
@@ -368,8 +385,8 @@ public class PieceMovement : MonoBehaviour
             {
                 if (pieceCoords[1] >= topRow)
                 {
-                    //fail the level
-                    Debug.Log("Game Over");
+                    loseScreen.SetActive(true);
+                    Camera.main.GetComponent<GameManager>().disablePausing = true;
                     this.enabled = false;
                     return;
                 }
@@ -482,7 +499,8 @@ public class PieceMovement : MonoBehaviour
         for(int i = 0; i < 4; i++)
         {
             ghostTiles[i] = boardManager.GetTile(pieceTiles[i][0], pieceTiles[i][1] - height);
-            ghostTiles[i].Ghost = true;
+            if(ghostTiles[i] != null)
+                ghostTiles[i].Ghost = true;
         }
     }
 
@@ -497,5 +515,8 @@ public class PieceMovement : MonoBehaviour
         heldPiece = Piece.single;
         holdImage.color = Color.clear;
         holdCooldown = false;
+        loseScreen.SetActive(false);
+        DASTimer = 0;
+        gravityTimer = 0;
     }
 }
