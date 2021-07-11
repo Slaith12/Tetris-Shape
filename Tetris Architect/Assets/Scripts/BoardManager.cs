@@ -30,8 +30,8 @@ public class BoardManager : MonoBehaviour
         {
             for(int j = 0; j < 20; j++)
             {
-                tiles[i,j] = Instantiate(emptyTile, transform).GetComponent<Tile>();
-                tiles[i,j].transform.position = new Vector3(i,j,0);
+                tiles[i, j] = Instantiate(emptyTile, transform).GetComponent<Tile>();
+                tiles[i, j].transform.position = new Vector3(i, j, 0);
             }
         }
         pieceMovement.Init();
@@ -144,7 +144,7 @@ public class BoardManager : MonoBehaviour
             nextPieces.Add(GetNewPiece());
         }
         UpdateNextQueue();
-        lineDropText.text = "Top line falls after " + objectiveManager.lineDrop + " line clears.";
+        lineDropText.text = "Top line falls after\n" + objectiveManager.lineDrop + " line clears.";
         pieceMovement.gravitySpeed = startSpeed;
         pieceMovement.ResetPieces(startingTopRow);
         pieceMovement.GetNewPiece(TakePiece());
@@ -220,6 +220,6 @@ public class BoardManager : MonoBehaviour
                 tiles[i, pieceMovement.topRow].State = TileState.Blocked;
             }
         }
-        lineDropText.text = "Top line falls after " + (objectiveManager.lineDrop - (clearedLines % objectiveManager.lineDrop)) + " line clears.";
+        lineDropText.text = "Top line falls after\n" + (objectiveManager.lineDrop - (clearedLines % objectiveManager.lineDrop)) + " line clears.";
     }
 }

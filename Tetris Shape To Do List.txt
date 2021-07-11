@@ -2,8 +2,8 @@ homework:
 
 improve UI
 update readme
-playtest, add, reorder levels
-IMPROVE VISUALS (add font, change ghost, add pause button)
+playtest and change problematic levels
+IMPROVE VISUALS (add font)
 
 maybe:
 consider audio
@@ -19,7 +19,7 @@ level 7: harder version of level 6
 level 8: buffers become barriers to make towering to the objective harder (not borders)
 level 9: level 5 but with the new concept from level 8
 level 10: put objectives close to top
-level 11: a super hard level that is eventually moved to the last challenge level AFTER getting nerfed. How did I originally think it was easy?
+level 11: a super hard level that is eventually moved to being the last challenge level AFTER getting nerfed. How did I originally think it was easy?
 level 12: seperate objective regions
 level 13: 
 level 14: 
@@ -29,7 +29,7 @@ level 17: entire board is either objective or buffer
 level 18: chess board (alternating objective and buffer)
 level 19: 
 level 20: secret grade
-
+(the only reason the last 4 levels became challenge levels was so that there was a place to put the old level 11.)
 
 desired difficulty curve: exponential
 -------------------finish game-----------------------------
@@ -39,6 +39,7 @@ date:
 
 post-ship features:
 disabled pieces for certain levels
+level editor
 
 J piece color: 0, 60, 255
 S piece color: 0, 255, 30
