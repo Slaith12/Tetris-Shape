@@ -10,6 +10,7 @@ public class ObjectiveManager : MonoBehaviour
     [SerializeField] LevelTip tipText;
     [SerializeField] GameManager gameManager;
     [SerializeField] GameObject restartWarning;
+    [SerializeField] GameObject skipButton;
 
     List<LevelData> levels = new List<LevelData>();
     List<TutorialLevel> tutorials = new List<TutorialLevel>();
@@ -118,6 +119,7 @@ public class ObjectiveManager : MonoBehaviour
     public void Init()
     {
         onTutorial = false;
+        skipButton.SetActive(false);
         boardManager = GetComponent<BoardManager>();
         pieceMovement = GetComponent<PieceMovement>();
         restartWarning.SetActive(false);
@@ -194,23 +196,23 @@ public class ObjectiveManager : MonoBehaviour
         levels.Add(new LevelData(1, 6, new int[,]{ { 3, 0 }, { 4, 0 }, { 5, 0 }, { 6, 0 },
                                                    { 3, 1 }, { 4, 1 }, { 5, 1 }, { 6, 1 },
                                                    { 3, 2 }, { 4, 2 }, { 5, 2 }, { 6, 2 },
-                                                   { 3, 3 }, { 4, 3 }, { 5, 3 }, { 6, 3 } }, "A Square of Squares", 0.1f, 2));
+                                                   { 3, 3 }, { 4, 3 }, { 5, 3 }, { 6, 3 } }, "A Square of Squares", 0.1f, 2, tip:"A simple shape for a simple level. Try to see which pieces fit together well and use them to complete the square. Don't be afraid to use a buffer if you need to, there's plenty available."));
         //level 2
         levels.Add(new LevelData(1, 6, new int[,] { { 4, 3 }, { 5, 3 }, { 3, 2 }, { 4, 2 }, { 5, 2 }, { 6, 2 }, { 2, 1 }, { 3, 1 }, { 4, 1 }, { 5, 1 }, { 6, 1 }, { 7, 1 },
-                                                    { 1, 0 }, { 2, 0 }, { 3, 0 }, { 4, 0 }, { 5, 0 }, { 6, 0 }, { 7, 0 }, { 8, 0 } }, "The Pyramid", 0.1f, 3));
+                                                    { 1, 0 }, { 2, 0 }, { 3, 0 }, { 4, 0 }, { 5, 0 }, { 6, 0 }, { 7, 0 }, { 8, 0 } }, "The Pyramid", 0.1f, 3, tip:"It's a slightly more complicated shape, but still not too bad if you can figure out which pieces are better for certain things. Remember, don't be afraid to use a buffer when you need to. You have plenty available."));
         //level 3
         levels.Add(new LevelData(1, 5, new int[,] { { 3, 4 }, { 4, 4 }, { 5, 4 }, { 6, 4 },
                                                      { 3, 5 }, { 4, 5 }, { 5, 5 }, { 6, 5 },
                                                      { 3, 6 }, { 4, 6 }, { 5, 6 }, { 6, 6 },
-                                                     { 3, 7 }, { 4, 7 }, { 5, 7 }, { 6, 7 } }, "The Floating Box", 0.2f, 3));
+                                                     { 3, 7 }, { 4, 7 }, { 5, 7 }, { 6, 7 } }, "The Floating Box", 0.2f, 3, tip:"This time, you'll need to tower up a little bit to get to the objective. You can then use a buffer to pierce through the border then play it normally, or if you're feeling fancy, you can clear a line with a tile on top of it within the objective and get in without using a buffer."));
         //level 4
-        levels.Add(new LevelData(2, 10, new int[,] { { 3, 5 }, { 4, 6 }, { 5, 7 }, { 6, 8 }, { 6, 7 }, { 6, 6 }, { 6, 5 }, { 6, 4 }, { 6, 3 }, { 6, 2 }, { 5, 3 }, { 4, 4 }, { 4, 5 }, { 5, 4 }, { 5, 5 }, { 5, 6 } }, "Another Triangle", 0.2f, 3));
+        levels.Add(new LevelData(2, 10, new int[,] { { 3, 5 }, { 4, 6 }, { 5, 7 }, { 6, 8 }, { 6, 7 }, { 6, 6 }, { 6, 5 }, { 6, 4 }, { 6, 3 }, { 6, 2 }, { 5, 3 }, { 4, 4 }, { 4, 5 }, { 5, 4 }, { 5, 5 }, { 5, 6 } }, "Another Triangle", 0.2f, 3, tip:"Don't be threatened by the extra buffers or the awkward shape. Just play it normally, placing pieces where they best fit, and use a buffer when you need to."));
         //level 5
         levels.Add(new LevelData(1, 10, new int[,] { { 4, 3 }, { 5, 3 }, { 5, 4 }, { 6, 4 }, { 6, 5 },
                                                      { 7, 5 }, { 7, 6 }, { 6, 6 }, { 6, 7 }, { 5, 7 },
-                                                     { 5, 8 }, { 4, 8 }, { 4, 7 }, { 3, 7 }, { 3, 6 }, { 2, 6 }, { 2, 5 }, { 3, 5 }, { 3, 4 }, { 4, 4 } }, "The Ringer", 0.3f, 2));
+                                                     { 5, 8 }, { 4, 8 }, { 4, 7 }, { 3, 7 }, { 3, 6 }, { 2, 6 }, { 2, 5 }, { 3, 5 }, { 3, 4 }, { 4, 4 } }, "The Ringer", 0.3f, 2, tip:"This shape can be a lot harder to work around. If you get a piece that you don't like, you can drop it at the bottom of the board outside the objective to get rid of it."));
         //level 6, an introduction to the "0 buffers" levels
-        levels.Add(new LevelData(1, 0, new int[,] { { 4, 5 } }, "Just One Tile", 0.1f, 3));
+        levels.Add(new LevelData(1, 0, new int[,] { { 4, 5 } }, "Just One Tile", 0.1f, 3, tip:"You can use the strategy from the tutorial of building above the objective and creating a line where there's only 1 piece at the objective. J and L will be the best pieces to do it with, and the single tile will need to be at least 1 tile above the objective."));
         //tutorial for level 6, I don't like that this is the first and only tutorial.
         tutorials.Add(new TutorialLevel(levels[5], new int[][,] { new int[,] { { 0, 0 }, { 0, 1 }, { 1, 0 }, { 2, 0 }, { 9, 7 }, { 9, 8 }, { 8, 8 }, { 7, 8 } }, //J piece
                                                                   new int[,] { { 1, 1 }, { 2, 1 }, { 2, 2 }, { 3, 2 }, { 7, 5 }, { 8, 5 }, { 8, 6 }, { 9, 6 } }, //S piece
@@ -218,39 +220,39 @@ public class ObjectiveManager : MonoBehaviour
                                                                   new int[,] { { 1, 4 }, { 1, 5 }, { 2, 5 }, { 2, 6 }, { 7, 2 }, { 7, 3 }, { 8, 3 }, { 8, 4 } }, //Z piece
                                                                   new int[,] { }, //T piece
                                                                   new int[,] { { 0, 2 }, { 0, 3 }, { 0, 4 }, { 0, 5 }, { 6, 0 }, { 7, 0 }, { 8, 0 }, { 9, 0 }, { 5, 7 }, { 6, 7 }, { 7, 7 }, { 8, 7 }, { 9, 1 }, { 9, 2 }, { 9, 3 }, { 9, 4 } }, //I Piece
-                                                                  new int[,] { { 3, 0 }, { 4, 0 }, { 3, 1 }, { 4, 1 } } }, new Piece[] { Piece.O, Piece.T, Piece.L }, 5, "The Magical Floating Orange." ));
+                                                                  new int[,] { { 3, 0 }, { 4, 0 }, { 3, 1 }, { 4, 1 } } }, new Piece[] { Piece.O, Piece.T, Piece.J }, 5, "The Magical Floating Orange." ));
         //level 7
-        levels.Add(new LevelData(1, 0, new int[,] { { 4, 5 }, { 5, 5 }, { 4, 6 }, { 5, 6 }, { 4, 7 }, { 5, 7 } }, "Half and Whole", 0.05f, 5));
+        levels.Add(new LevelData(1, 0, new int[,] { { 4, 5 }, { 5, 5 }, { 4, 6 }, { 5, 6 }, { 4, 7 }, { 5, 7 } }, "Half and Whole", 0.05f, 5, tip:"This time, you'll need to be more careful about what you set up in the objective region. Remember that all pieces are made of 4 tiles, so you'll need to have half of a piece and a whole piece in the objective."));
         //level 8, an introduction to the concept of buffers being seperate from the objective and the concept of "piercing" through a buffer to get to the other side.
         levels.Add(new LevelData(new int[,] { { 2, 3 }, { 2, 4 }, { 2, 5 }, { 2, 6 }, { 2, 7 }, { 2, 8 }, { 3, 8 }, { 4, 8 }, { 5, 8 }, { 6, 8 }, { 7, 8 }, { 7, 7 }, { 7, 6 }, { 7, 5 }, { 7, 4 }, { 7, 3 }, { 6, 3 }, { 5, 3 }, { 4, 3 }, { 3, 3 }, { 2, 3 } },
-                                 0, new int[,] { { 4, 6 }, { 4, 5 }, { 5, 5 }, { 5, 6 } }, "The Vault", 0.2f, 3));
+                                 0, new int[,] { { 4, 6 }, { 4, 5 }, { 5, 5 }, { 5, 6 } }, "The Vault", 0.2f, 3, tip:"You need to pierce through the side of the buffers and clear the line with pieces on top of the line. Here, you have more flexibility on what the tiles on top could be, so you don't need to limit yourself to L and J pieces for piercing."));
         //level 9
         levels.Add(new LevelData(new int[,] { { 0, 0 }, { 1, 1 }, { 2, 2 }, { 3, 3 }, { 4, 4 }, { 5, 5 }, { 6, 6 }, { 7, 7 }, { 8, 8 }, { 9, 9 }, { 1, 0 }, { 2, 1 }, { 3, 2 }, { 4, 3 }, { 5, 4 }, { 6, 5 }, { 7, 6 }, { 8, 7 }, { 9, 8 } }, 0,
-                                 new int[,] { { 2, 8 }, { 4, 8 }, { 3, 7 }, { 3, 9 }, { 8, 2 }, { 8, 4 }, { 7, 3 }, { 9, 3 } }, "One in a Hundred", 0.1f, 3));
+                                 new int[,] { { 2, 8 }, { 4, 8 }, { 3, 7 }, { 3, 9 }, { 8, 2 }, { 8, 4 }, { 7, 3 }, { 9, 3 } }, "One in a Hundred", 0.1f, 3, tip:"Here the line is preventing you from towering above it until you pierce through it. It's best to do this at the second line since that's the earliest you can do it. There are many ways to do it, but you'll need a piece with at least 3 tiles in a straight line since the buffer line is 2 tiles wide."));
         //level 10
         levels.Add(new LevelData(new int[,] { { 0, 0 }, { 9, 0 }, { 1, 1 }, { 8, 1 }, { 2, 2 }, { 7, 2 }, { 3, 3 }, { 6, 3 }, { 4, 4 }, { 5, 4 },
                                               { 5, 5 }, { 4, 5 }, { 6, 6 }, { 3, 6 }, { 7, 7 }, { 2, 7 }, { 8, 8 }, { 1, 8 }, { 9, 9 }, { 0, 9 } }, 0,
-                                 new int[,] { { 4, 18 }, { 5, 18 } }, "Double Cross", 0, 20));
+                                 new int[,] { { 4, 18 }, { 5, 18 } }, "Double Cross", 0, 20, tip:"It's like the previous level, but you need to cross the line twice. It's recommended to pierce through both sides at the beginning so that you have an easier time clearing the linefor the second piercing. Also, since the lines are 1 tile wide, you can now use any of the tiles for piercing if you're creative enough (except for the O piece)"));
         //level 11, an introduction to the concept of mutliple seperate objective regions. Was originally level 12 before the old level 11 was moved to the challenge levels.
-        levels.Add(new LevelData(1, 0, new int[,] { { 2, 8 }, { 7, 8 } }, "The Abyss Stares Back", 0.1f, 4));
+        levels.Add(new LevelData(1, 0, new int[,] { { 2, 8 }, { 7, 8 } }, "The Abyss Stares Back", 0.1f, 4, tip:"This time, you'll need to create single tiles above BOTH objectives before line clearing. It's basically level 6 but doubled, so it shouldn't be too hard."));
         //level 12, a combination of levels 8 and 11. Was originally 2 (very weirdly) intersecting diamonds, but top halves were cut off to allow for more room and make it easier. Was originally level 13 before the old level 11 was moved to the challenge levels.
         levels.Add(new LevelData(new int[,] { { 3, 7 }, { 6, 7 }, { 2, 8 }, { 4, 8 }, { 7, 8 }, { 5, 8 }, { 1, 9 }, { 5, 9 }, { 8, 9 }, { 4, 9 },
                                               { 0, 10 }, { 3, 10 }, { 6, 10 }, { 9, 10 } }, 0,
-                                 new int[,] { { 1, 10 }, { 8, 10 } }, "A Poorly Drawn W (I Tried)", 0.1f, 4, tip: "It's actually 2 V's intersecting very weirdly. Oh you probably came here for a hint. The place where you go through the buffer will be very important, since it determines how you'll clear the line and how you'll build to the objective."));
-        //level 13, ended looking even funnier than I imagined. Created as a replacement for the old level 11.
+                                 new int[,] { { 1, 10 }, { 8, 10 } }, "A Poorly Drawn W (I Tried)", 0.1f, 4, tip: "It's actually 2 V's intersecting very weirdly. Oh you probably came here for a hint. The place where you go through the buffer will be very important, since it determines how you'll clear the line and how you'll build to the objective. Some lines will be easier to cleanly clear than others."));
+        //level 13, ended up looking even funnier than I imagined. Created as a replacement for the old level 11.
         levels.Add(new LevelData(new int[,] { { 4, 0 }, { 5, 0 }, { 3, 1 }, { 6, 1 }, { 2, 2 }, { 7, 2 }, { 1, 3 }, { 8, 3 }, { 0, 4 }, { 9, 4 },
                                               { 4, 9 }, { 5, 9 }, { 3, 8 }, { 6, 8 }, { 2, 7 }, { 7, 7 }, { 1, 6 }, { 8, 6 }, { 0, 5 }, { 9, 5 } }, 0,
-                                 new int[,] { { 3, 4 }, { 3, 5 }, { 4, 6 }, { 5, 6 }, { 6, 5 }, { 6, 4 }, { 5, 3 }, { 4, 3 }, { 2, 10 }, { 7, 10 } }, "Open Wide!", 0.1f, 4));
+                                 new int[,] { { 3, 4 }, { 3, 5 }, { 4, 6 }, { 5, 6 }, { 6, 5 }, { 6, 4 }, { 5, 3 }, { 4, 3 }, { 2, 10 }, { 7, 10 } }, "Open Wide!", 0.1f, 4, tip:"There's nothing in tis level that you haven't seen before. You'll need to be creative with how you pierce the first line depending on the pieces you get, but remember that it's possible to do it with any of the pieces except O.\n\n\n:O"));
         //level 14, an introduction to the "follow the path" levels.
         levels.Add(new LevelData(1, 5, new int[,] { { 3, 3 }, { 4, 3 }, { 5, 3 }, { 6, 3 }, { 7, 3 }, { 3, 4 }, { 4, 4 }, { 5, 4 }, { 6, 4 }, { 6, 5 }, { 6, 6 }, { 6, 7 }, { 6, 8 }, { 6, 9 },
                                                     { 7, 4 }, { 7, 5 }, { 7, 6 }, { 7, 7 }, { 7, 8 }, { 7, 9 }, { 5, 9 }, { 4, 9 }, { 3, 9 }, { 7, 10 }, { 6, 10 }, { 5, 10 }, { 4, 10 }, { 3, 10 } }, "Follow the Curve", 0.2f, 2, tip: "It's very hard to cleanly make a 2 tile wide line. Use buffers carefully."));
-        //level 15
+        //level 15, it's a reference
         levels.Add(new LevelData(new int[,] { { 4, 0 }, { 4, 1 }, { 4, 2 }, { 4, 3 }, { 4, 4 }, { 4, 5 }, { 4, 6 }, { 5, 6 }, { 6, 6 }, { 7, 6 }, { 8, 6 }, { 8, 7 }, { 9, 7 }, { 9, 8 },
                                               { 9, 14 }, { 9, 15 }, { 8, 15 }, { 8, 16 }, { 7, 16 }, { 6, 16 }, { 5, 16 }, { 4, 16 }, { 3, 16 }, { 2, 16 }, { 5, 10 }, { 6, 10 }, { 5, 11 }, { 6, 11 }, { 5, 12 }, { 6, 12 } }, 0, 
                                  new int[,] { { 2, 0 }, { 3, 0 }, { 2, 1 }, { 3, 1 }, { 2, 2 }, { 3, 2 }, { 2, 3 }, { 3, 3 }, { 2, 4 }, { 3, 4 }, { 2, 5 }, { 3, 5 }, { 2, 6 }, { 3, 6 }, { 2, 7 }, { 3, 7 },
                                               { 2, 8 }, { 3, 8 }, { 2, 9 }, { 3, 9 }, { 2, 10 }, { 3, 10 }, { 2, 11 }, { 3, 11 }, { 2, 12 }, { 3, 12 }, { 2, 13 }, { 3, 13 }, { 2, 14 }, { 3, 14 }, { 2, 15 }, { 3, 15 },
                                               { 4, 7 }, { 4, 8 }, { 5, 7 }, { 5, 8 }, { 6, 7 }, { 6, 8 }, { 7, 7 }, { 7, 8 }, { 7, 9 }, { 8, 8 }, { 8, 9 }, { 8, 10 }, { 8, 11 }, { 8, 12 }, { 8, 13 },
-                                              { 9, 9 }, { 9, 10 }, { 9, 11 }, { 9, 12 }, { 9, 13 }, { 7, 13 }, { 8, 14 }, { 7, 14 }, { 6, 14 }, { 5, 14 }, { 4, 14 }, { 7, 15 }, { 6, 15 }, { 5, 15 }, { 4, 15 } }, "P for Perfect", 0.1f, 4));
+                                              { 9, 9 }, { 9, 10 }, { 9, 11 }, { 9, 12 }, { 9, 13 }, { 7, 13 }, { 8, 14 }, { 7, 14 }, { 6, 14 }, { 5, 14 }, { 4, 14 }, { 7, 15 }, { 6, 15 }, { 5, 15 }, { 4, 15 } }, "P for Perfect", 0.1f, 4, tip:"If you get pieces that you don't want, you can place either place them at the bottom right corner or above the objective, depending on how far into the level you are. Be careful when making the curve of the P. S and Z pieces will be your best friend there."));
         //level 16
         levels.Add(new LevelData(1, 4, new int[,] { { 4, 0 }, { 5, 0 }, { 8, 0 }, { 9, 0 }, { 4, 1 }, { 5, 1 }, { 8, 1 }, { 9, 1 }, { 4, 2 }, { 5, 2 }, { 8, 2 }, { 9, 2 }, { 4, 3 }, { 5, 3 }, { 8, 3 }, { 9, 3 }, { 4, 4 }, { 5, 4 }, { 8, 4 }, { 9, 4 }, { 6, 4 }, { 7, 4 }, { 6, 5 }, { 7, 5 },
                                                     { 4, 5 }, { 5, 5 }, { 8, 5 }, { 9, 5 }, { 4, 6 }, { 5, 6 }, { 8, 6 }, { 9, 6 }, { 4, 7 }, { 5, 7 }, { 8, 7 }, { 9, 7 }, { 4, 8 }, { 5, 8 }, { 8, 8 }, { 9, 8 }, { 4, 9 }, { 5, 9 }, { 8, 9 }, { 9, 9 }, { 6, 8 }, { 7, 8 }, { 6, 9 }, { 7, 9 },
@@ -297,6 +299,7 @@ public class ObjectiveManager : MonoBehaviour
             }
         }
         onTutorial = false;
+        skipButton.SetActive(false);
         Debug.Log(level);
         tipText.SetTip(levels[level].tip);
         if (level < 16)
@@ -313,8 +316,9 @@ public class ObjectiveManager : MonoBehaviour
     public void StartTutorial(int level)
     {
         onTutorial = true;
+        skipButton.SetActive(true);
         currentLevel = level;
-        tipText.SetTip(tutorials[level].baseLevel.tip);
+        tipText.SetTip("These tutorials are meant to be easy. Look at what you're given, and you should be able to figure out what to do.");
         levelText.text = "Tutorial " + (level + 1) + ": " + tutorials[level].title;
         bufferText.text = "0/" + tutorials[currentLevel].baseLevel.allowedBuffers + " buffers used.";
         bufferText.color = Color.green;
@@ -339,6 +343,13 @@ public class ObjectiveManager : MonoBehaviour
             boardManager.nextPieces[i - 1] = tutorials[level].initialQueue[i];
         }
         boardManager.UpdateNextQueue();
+    }
+
+    //used by skip button because buttons can't call functions that return something
+    public void SkipTutorial()
+    {
+        gameManager.Resume();
+        GoToNextLevel();
     }
 
     public bool CheckObjective()

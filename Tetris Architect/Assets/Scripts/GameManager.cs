@@ -85,6 +85,7 @@ public class GameManager : MonoBehaviour
 
     public void GoToLevelSelect()
     {
+        PlayerPrefs.SetInt("Skip Tutorial", 0);
         SceneManager.LoadScene("Level Select");
     }
 
