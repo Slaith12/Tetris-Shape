@@ -2,8 +2,8 @@ homework:
 
 improve UI
 update readme
-playtest and change problematic levels
 IMPROVE VISUALS (add font)
+finish the game
 
 maybe:
 consider audio
@@ -34,12 +34,13 @@ level 20: secret grade
 desired difficulty curve: exponential
 -------------------finish game-----------------------------
 publish to itch.io
-date: 
+date: 7/16
 
 
 post-ship features:
 disabled pieces for certain levels
 level editor
+timer mode (runs while paused)
 
 J piece color: 0, 60, 255
 S piece color: 0, 255, 30
