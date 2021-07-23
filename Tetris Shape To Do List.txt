@@ -2,7 +2,9 @@ homework:
 
 improve UI
 update readme
-IMPROVE VISUALS (add font)
+add tutorial to level 1
+"reset progress" button
+work on game page
 finish the game
 
 maybe:
@@ -50,4 +52,5 @@ T piece color: 170, 0, 255
 I piece color: 0, 255, 255
 O piece color: 255, 240, 0
 
-work on resume
+ Tetris
+Architect

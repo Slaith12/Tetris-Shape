@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class ObjectiveManager : MonoBehaviour
 {
     [SerializeField] Text bufferText;
+    [SerializeField] Text goalText;
     [SerializeField] Text levelText;
     [SerializeField] LevelTip tipText;
     [SerializeField] GameManager gameManager;
@@ -41,7 +42,7 @@ public class ObjectiveManager : MonoBehaviour
 
     public struct LevelData
     {
-        public LevelData(int borderSize, int allowedBuffers, int[,] requiredTiles, string title, float speedIncrease, int lineDrop, float startSpeed = 1, int startTop = 20, string tip = "")
+        public LevelData(int borderSize, int allowedBuffers, int[,] requiredTiles, string title, float speedIncrease, int lineDrop, float startSpeed = 1, int startTop = 20, string tip = "No tip available.")
         {
             this.borderSize = borderSize;
             this.allowedBuffers = allowedBuffers;
@@ -61,7 +62,7 @@ public class ObjectiveManager : MonoBehaviour
             this.tip = tip;
         }
 
-        public LevelData(int[,] bufferTiles, int allowedBuffers, int[,] requiredTiles, string title, float speedIncrease, int lineDrop, float startSpeed = 1, int startTop = 20, string tip = "")
+        public LevelData(int[,] bufferTiles, int allowedBuffers, int[,] requiredTiles, string title, float speedIncrease, int lineDrop, float startSpeed = 1, int startTop = 20, string tip = "No tip available.")
         {
             this.borderSize = 0;
             this.allowedBuffers = allowedBuffers;
@@ -99,13 +100,14 @@ public class ObjectiveManager : MonoBehaviour
 
     public struct TutorialLevel
     {
-        public TutorialLevel(LevelData baseLevel, int[][,] pieceLocations, Piece[] initialQueue, int precedingLevel, string title)
+        public TutorialLevel(LevelData baseLevel, int[][,] pieceLocations, Piece[] initialQueue, int precedingLevel, string title, string tip = "These tutorials are meant to be easy. Look at what you're given, and you should be able to figure out what to do.")
         {
             this.baseLevel = baseLevel;
             this.pieceLocations = pieceLocations;
             this.initialQueue = initialQueue;
             this.precedingLevel = precedingLevel;
             this.title = title;
+            this.tip = tip;
         }
 
         public LevelData baseLevel;
@@ -113,6 +115,7 @@ public class ObjectiveManager : MonoBehaviour
         public Piece[] initialQueue;
         public int precedingLevel;
         public string title;
+        public string tip;
     }
 
     // Use this for initilization
@@ -192,11 +195,21 @@ public class ObjectiveManager : MonoBehaviour
     }
     void InitLevels() //I don't like how long these are.
     {
-        //level 1, I might add a tutorial here just so the tutorial for level 6 is less surprising.
+        //level 1
         levels.Add(new LevelData(1, 6, new int[,]{ { 3, 0 }, { 4, 0 }, { 5, 0 }, { 6, 0 },
                                                    { 3, 1 }, { 4, 1 }, { 5, 1 }, { 6, 1 },
                                                    { 3, 2 }, { 4, 2 }, { 5, 2 }, { 6, 2 },
                                                    { 3, 3 }, { 4, 3 }, { 5, 3 }, { 6, 3 } }, "A Square of Squares", 0.1f, 2, tip:"A simple shape for a simple level. Try to see which pieces fit together well and use them to complete the square. Don't be afraid to use a buffer if you need to, there's plenty available."));
+        //tutorial 1, mainly created so that the tutorial for level 6 isn't as surprising
+        tutorials.Add(new TutorialLevel(new LevelData(3, 4, new int[,] { { 3, 0 }, { 4, 0 }, { 5, 0 }, { 6, 0 }, { 3, 1 }, { 4, 1 }, { 5, 1 }, { 6, 1 }, { 3, 2 }, { 4, 2 }, { 5, 2 }, { 6, 2 } }, "", 0, 10), 
+                                             new int[][,] { new int[,] { }, //J Piece
+                                                            new int[,] { }, //S Piece
+                                                            new int[,] { { 4, 0 }, { 5, 0 }, { 6, 0 }, { 6, 1 } }, // L Piece
+                                                            new int[,] { }, // Z Piece
+                                                            new int[,] { }, // T Piece
+                                                            new int[,] { }, // I Piece
+                                                            new int[,] { } }, //O Piece
+                                              new Piece[] { Piece.S, Piece.J, Piece.T, Piece.I }, 0, "Welcome To Tetris Architect", "The goal is to fill all the objective tiles (outlined in green) while not filling too many buffer tiles (outlined in red). You can see how many buffers you can fill before not being able to win at the left side of the screen."));
         //level 2
         levels.Add(new LevelData(1, 6, new int[,] { { 4, 3 }, { 5, 3 }, { 3, 2 }, { 4, 2 }, { 5, 2 }, { 6, 2 }, { 2, 1 }, { 3, 1 }, { 4, 1 }, { 5, 1 }, { 6, 1 }, { 7, 1 },
                                                     { 1, 0 }, { 2, 0 }, { 3, 0 }, { 4, 0 }, { 5, 0 }, { 6, 0 }, { 7, 0 }, { 8, 0 } }, "The Pyramid", 0.1f, 3, tip:"It's a slightly more complicated shape, but still not too bad if you can figure out which pieces are better for certain things. Remember, don't be afraid to use a buffer when you need to. You have plenty available."));
@@ -246,7 +259,7 @@ public class ObjectiveManager : MonoBehaviour
         //level 14, an introduction to the "follow the path" levels.
         levels.Add(new LevelData(1, 5, new int[,] { { 3, 3 }, { 4, 3 }, { 5, 3 }, { 6, 3 }, { 7, 3 }, { 3, 4 }, { 4, 4 }, { 5, 4 }, { 6, 4 }, { 6, 5 }, { 6, 6 }, { 6, 7 }, { 6, 8 }, { 6, 9 },
                                                     { 7, 4 }, { 7, 5 }, { 7, 6 }, { 7, 7 }, { 7, 8 }, { 7, 9 }, { 5, 9 }, { 4, 9 }, { 3, 9 }, { 7, 10 }, { 6, 10 }, { 5, 10 }, { 4, 10 }, { 3, 10 } }, "Follow the Curve", 0.2f, 2, tip: "It's very hard to cleanly make a 2 tile wide line. Use buffers carefully."));
-        //level 15, it's a reference
+        //level 15
         levels.Add(new LevelData(new int[,] { { 4, 0 }, { 4, 1 }, { 4, 2 }, { 4, 3 }, { 4, 4 }, { 4, 5 }, { 4, 6 }, { 5, 6 }, { 6, 6 }, { 7, 6 }, { 8, 6 }, { 8, 7 }, { 9, 7 }, { 9, 8 },
                                               { 9, 14 }, { 9, 15 }, { 8, 15 }, { 8, 16 }, { 7, 16 }, { 6, 16 }, { 5, 16 }, { 4, 16 }, { 3, 16 }, { 2, 16 }, { 5, 10 }, { 6, 10 }, { 5, 11 }, { 6, 11 }, { 5, 12 }, { 6, 12 } }, 0, 
                                  new int[,] { { 2, 0 }, { 3, 0 }, { 2, 1 }, { 3, 1 }, { 2, 2 }, { 3, 2 }, { 2, 3 }, { 3, 3 }, { 2, 4 }, { 3, 4 }, { 2, 5 }, { 3, 5 }, { 2, 6 }, { 3, 6 }, { 2, 7 }, { 3, 7 },
@@ -254,12 +267,12 @@ public class ObjectiveManager : MonoBehaviour
                                               { 4, 7 }, { 4, 8 }, { 5, 7 }, { 5, 8 }, { 6, 7 }, { 6, 8 }, { 7, 7 }, { 7, 8 }, { 7, 9 }, { 8, 8 }, { 8, 9 }, { 8, 10 }, { 8, 11 }, { 8, 12 }, { 8, 13 },
                                               { 9, 9 }, { 9, 10 }, { 9, 11 }, { 9, 12 }, { 9, 13 }, { 7, 13 }, { 8, 14 }, { 7, 14 }, { 6, 14 }, { 5, 14 }, { 4, 14 }, { 7, 15 }, { 6, 15 }, { 5, 15 }, { 4, 15 } }, "P for Perfect", 0.1f, 4, tip:"If you get pieces that you don't want, you can place either place them at the bottom right corner or above the objective, depending on how far into the level you are. Be careful when making the curve of the P. S and Z pieces will be your best friend there."));
         //level 16
-        levels.Add(new LevelData(1, 4, new int[,] { { 4, 0 }, { 5, 0 }, { 8, 0 }, { 9, 0 }, { 4, 1 }, { 5, 1 }, { 8, 1 }, { 9, 1 }, { 4, 2 }, { 5, 2 }, { 8, 2 }, { 9, 2 }, { 4, 3 }, { 5, 3 }, { 8, 3 }, { 9, 3 }, { 4, 4 }, { 5, 4 }, { 8, 4 }, { 9, 4 }, { 6, 4 }, { 7, 4 }, { 6, 5 }, { 7, 5 },
+        levels.Add(new LevelData(1, 7, new int[,] { { 4, 0 }, { 5, 0 }, { 8, 0 }, { 9, 0 }, { 4, 1 }, { 5, 1 }, { 8, 1 }, { 9, 1 }, { 4, 2 }, { 5, 2 }, { 8, 2 }, { 9, 2 }, { 4, 3 }, { 5, 3 }, { 8, 3 }, { 9, 3 }, { 4, 4 }, { 5, 4 }, { 8, 4 }, { 9, 4 }, { 6, 4 }, { 7, 4 }, { 6, 5 }, { 7, 5 },
                                                     { 4, 5 }, { 5, 5 }, { 8, 5 }, { 9, 5 }, { 4, 6 }, { 5, 6 }, { 8, 6 }, { 9, 6 }, { 4, 7 }, { 5, 7 }, { 8, 7 }, { 9, 7 }, { 4, 8 }, { 5, 8 }, { 8, 8 }, { 9, 8 }, { 4, 9 }, { 5, 9 }, { 8, 9 }, { 9, 9 }, { 6, 8 }, { 7, 8 }, { 6, 9 }, { 7, 9 },
                                                     { 2, 6 }, { 3, 6 }, { 2, 7 }, { 3, 7 }, { 2, 8 }, { 3, 8 }, { 2, 9 }, { 3, 9 }, { 2, 10 }, { 3, 10 }, { 2, 11 }, { 3, 11 }, { 2, 12 }, { 3, 12 }, { 2, 13 }, { 3, 13 },
-                                                    { 0, 14 }, { 1, 14 }, { 2, 14 }, { 3, 14 }, { 4, 14 }, { 5, 14 }, { 0, 15 }, { 1, 15 }, { 2, 15 }, { 3, 15 }, { 4, 15 }, { 5, 15 } }, "Thanks For Playing", 0.05f, 7));
+                                                    { 0, 14 }, { 1, 14 }, { 2, 14 }, { 3, 14 }, { 4, 14 }, { 5, 14 }, { 0, 15 }, { 1, 15 }, { 2, 15 }, { 3, 15 }, { 4, 15 }, { 5, 15 } }, "Thanks For Playing", 0.05f, 6, tip: "You'll need to use at least 1 buffer at the beginning to get a good start (unless you're incredibly lucky). Also, you can "));
         //Challenge Level 1, based on levels 9, 10, 12, and 13 (an entire line is blocked off, requiring you to clear a line to get past it.)
-        levels.Add(new LevelData(new int[,] { { 0, 7 }, { 1, 8 }, { 2, 7 }, { 3, 8 }, { 4, 7 }, { 5, 8 }, { 6, 7 }, { 7, 8 }, { 8, 7 }, { 9, 8 } }, 0, new int[,] { { 4, 10 }, { 4, 11 }, { 5, 10 }, { 5, 11 } }, "The Impenetrable Wall", 0.1f, 10, tip: "This is much harder than it initially seems. It may be easy to get to the first layer and place a piece to set up for the second layer, but clearing the line without making artifacts in either layer will be difficult. This time, you'll need to build up over the wall a bit and plan out how the lines will be cleared."));
+        levels.Add(new LevelData(new int[,] { { 0, 7 }, { 1, 8 }, { 2, 7 }, { 3, 8 }, { 4, 7 }, { 5, 8 }, { 6, 7 }, { 7, 8 }, { 8, 7 }, { 9, 8 } }, 0, new int[,] { { 4, 10 }, { 4, 11 }, { 5, 10 }, { 5, 11 } }, "The Impenetrable Wall", 0.1f, 10, tip: "This is much harder than it initially seems. It may be easy to get to the first layer and place a piece to set up for the second layer, but clearing the line without making artifacts in either layer will be difficult. You'll need to be mindful of the pieces you place and where you place them."));
         //Challenge Level 2, based on levels 14-16 (you're forced to follow a "path")
         levels.Add(new LevelData(1, 2, new int[,] { { 1, 0 }, { 2, 0 }, { 3, 0 }, { 1, 1 }, { 2, 1 }, { 3, 1 }, { 1, 2 }, { 2, 2 }, { 3, 2 }, { 1, 3 }, { 2, 3 }, { 3, 3 }, { 1, 4 }, { 2, 4 }, { 3, 4 }, { 1, 5 }, { 2, 5 }, { 3, 5 }, { 1, 6 }, { 2, 6 }, { 3, 6 }, { 1, 7 }, { 2, 7 }, { 3, 7 }, { 0, 6 }, { 0, 7 },
                                                     { 4, 5 }, { 5, 5 }, { 4, 6 }, { 5, 6 }, { 4, 7 }, { 5, 7 }, { 3, 8 }, { 4, 8 }, { 5, 8 }, { 3, 9 }, { 4, 9 }, { 5, 9 }, { 3, 10 }, { 4, 10 }, { 5, 10 }, { 1, 10 }, { 1, 11 }, { 1, 12 }, { 2, 10 }, { 2, 11 }, { 2, 12 },
@@ -306,11 +319,10 @@ public class ObjectiveManager : MonoBehaviour
             levelText.text = "Level " + (level + 1) + ": " + levels[level].title;
         else
             levelText.text = "Challenge Level " + (level - 15) + ": " + levels[level].title;
-        bufferText.text = "0/" + levels[currentLevel].allowedBuffers + " buffers used.";
-        bufferText.color = Color.green;
         boardManager.ClearBoard();
         GenerateTiles(levels[level]);
         boardManager.BeginLevel(levels[level].startTop, levels[level].startSpeed);
+        CheckObjective();
     }
 
     public void StartTutorial(int level)
@@ -318,10 +330,8 @@ public class ObjectiveManager : MonoBehaviour
         onTutorial = true;
         skipButton.SetActive(true);
         currentLevel = level;
-        tipText.SetTip("These tutorials are meant to be easy. Look at what you're given, and you should be able to figure out what to do.");
+        tipText.SetTip(tutorials[level].tip);
         levelText.text = "Tutorial " + (level + 1) + ": " + tutorials[level].title;
-        bufferText.text = "0/" + tutorials[currentLevel].baseLevel.allowedBuffers + " buffers used.";
-        bufferText.color = Color.green;
         boardManager.ClearBoard();
         GenerateTiles(tutorials[level].baseLevel);
         for(int i = 0; i < tutorials[level].pieceLocations.Length; i++)
@@ -343,6 +353,7 @@ public class ObjectiveManager : MonoBehaviour
             boardManager.nextPieces[i - 1] = tutorials[level].initialQueue[i];
         }
         boardManager.UpdateNextQueue();
+        CheckObjective();
     }
 
     //used by skip button because buttons can't call functions that return something
@@ -358,6 +369,7 @@ public class ObjectiveManager : MonoBehaviour
         LevelData level = levels[currentLevel];
         if (onTutorial)
             level = tutorials[currentLevel].baseLevel;
+        int filledTiles = 0;
         foreach(int[] tiles in level.requiredTiles)
         {
             switch(boardManager.GetTile(tiles[0],tiles[1])?.State)
@@ -370,6 +382,7 @@ public class ObjectiveManager : MonoBehaviour
                     reqTilesFilled = false;
                     break;
                 case TileState.Filled:
+                    filledTiles++;
                     break;
                 default:
                     Debug.LogError("Tile at column " + tiles[0] + " and row " + tiles[1] + " had an invalid tile state.");
@@ -397,7 +410,8 @@ public class ObjectiveManager : MonoBehaviour
             }
         }
         bufferText.text = buffers + "/" + level.allowedBuffers + " buffers used.";
-        bufferText.color = buffers > level.allowedBuffers ? Color.red : Color.green;
+        bufferText.color = buffers > level.allowedBuffers ? Color.red : Color.yellow;
+        goalText.text = filledTiles + "/" + level.requiredTiles.Length + " goal tiles filled.";
         return reqTilesFilled && buffers <= level.allowedBuffers;
     }
     public bool GoToNextLevel()

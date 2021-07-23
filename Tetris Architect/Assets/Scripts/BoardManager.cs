@@ -9,6 +9,7 @@ public class BoardManager : MonoBehaviour
     [SerializeField] GameObject winScreen;
     [SerializeField] Text lineDropText;
     [SerializeField] Image[] pieceImages;
+    [SerializeField] GameManager gameManager;
     public Sprite[] pieceSprites;
 
     public Tile[,] tiles = new Tile[10, 20];
@@ -75,6 +76,7 @@ public class BoardManager : MonoBehaviour
                 PlayerPrefs.SetInt("Unlocked Levels", objectiveManager.currentLevel + 1);
             }
             pieceMovement.enabled = false;
+            gameManager.disablePausing = true;
             return;
         }
         pieceMovement.GetNewPiece(TakePiece());
@@ -128,6 +130,7 @@ public class BoardManager : MonoBehaviour
 
     public void BeginLevel(int startingTopRow, float startSpeed)
     {
+        gameManager.disablePausing = false;
         pieceMovement.enabled = true;
         clearedLines = 0;
         for(int row = startingTopRow; row < 20; row++)

@@ -14,7 +14,7 @@ public class LevelSelectManager : MonoBehaviour
     {
         if(!PlayerPrefs.HasKey("Unlocked Levels"))
         {
-            PlayerPrefs.SetInt("Unlocked Levels", 15);
+            PlayerPrefs.SetInt("Unlocked Levels", 0);
         }
         for (int i = 0; i <= Mathf.Min(PlayerPrefs.GetInt("Unlocked Levels"), 15); i++)
         {
