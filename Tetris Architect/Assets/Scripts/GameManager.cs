@@ -93,6 +93,11 @@ public class GameManager : MonoBehaviour
     {
         if (disablePausing)
             return;
+        if(paused)
+        {
+            Resume();
+            return;
+        }
         paused = true;
         pauseScreen.SetActive(true);
         pieceMovement.enabled = false;
@@ -100,6 +105,10 @@ public class GameManager : MonoBehaviour
 
     public void Resume()
     {
+        if (!paused)
+        {
+            Pause();
+        }
         paused = false;
         pauseScreen.SetActive(false);
         pieceMovement.enabled = true;

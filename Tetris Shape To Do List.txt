@@ -2,13 +2,12 @@ homework:
 
 improve UI
 update readme
-add tutorial to level 1
-"reset progress" button
-work on game page
-finish the game
+timer mode (runs while paused)
+
+level editor
 
 maybe:
-consider audio
+consider sfx
 
 Original plans for levels:
 level 1: learn basic mechanics

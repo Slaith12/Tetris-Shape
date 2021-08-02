@@ -9,6 +9,7 @@ public class PieceMovement : MonoBehaviour
     BoardManager boardManager;
     [SerializeField] Image holdImage;
     [SerializeField] GameObject loseScreen;
+    [SerializeField] GameObject holdGreyOut;
 
     //objective related variables
     public float gravitySpeed;
@@ -43,7 +44,7 @@ public class PieceMovement : MonoBehaviour
     /// If you rotate a piece and it would collide with other tiles, the piece shifts to these offsets to try to get in a clear space.
     /// </summary>
     readonly int[,] wallKickOffsets = new int[,] { { 0, 0 }, { -1, 0 }, { -1, 1 }, { 0, -2 }, { -1, -2 } };
-    readonly int[,,] iPieceKickOffsets = new int[,,] { { { 0, 0 } , { -2, 0 }, { 1, 0 }, { -2, -1 } , { 1, 2 } },
+    readonly int[,,] iPieceKickOffsets = new int[,,] { { { 0, 0 }, { -2, 0 }, { 1, 0 }, { -2, -1 }, { 1, 2 } },
                                                        { { 0, 0 }, { -1, 0 }, { 2, 0 }, { -1, 2 }, { 2, -1 } } }; // The I piece uses different offsets than other pieces for wall kicks
 
     //misc
@@ -143,6 +144,7 @@ public class PieceMovement : MonoBehaviour
         heldPiece = placeholder;
         holdImage.sprite = boardManager.pieceSprites[(int)heldPiece];
         holdCooldown = true;
+        holdGreyOut.SetActive(true);
     }
 
     void Rotate(bool clockwise)
@@ -368,6 +370,7 @@ public class PieceMovement : MonoBehaviour
     void PlacePiece()
     {
         holdCooldown = false;
+        holdGreyOut.SetActive(false);
         foreach(Tile ghostTile in ghostTiles)
         {
             if(ghostTile != null)
