@@ -2,7 +2,6 @@ homework:
 
 improve UI
 update readme
-timer mode (runs while paused)
 
 level editor
 

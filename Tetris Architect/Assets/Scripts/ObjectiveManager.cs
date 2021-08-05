@@ -426,7 +426,7 @@ public class ObjectiveManager : MonoBehaviour
             currentLevel++;
             PlayerPrefs.SetInt("Skip Tutorial", 0);
         }
-        if (levels.Count <= currentLevel)
+        if (currentLevel >= 15)
         {
             return false;
         }

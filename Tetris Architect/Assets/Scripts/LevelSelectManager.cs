@@ -9,6 +9,7 @@ public class LevelSelectManager : MonoBehaviour
 {
     [SerializeField] GameObject level;
     [SerializeField] RectTransform levelContainer;
+    [SerializeField] GameObject congratulation;
 
     void Start()
     {
@@ -34,6 +35,11 @@ public class LevelSelectManager : MonoBehaviour
                 newLevel.GetComponent<Button>().onClick.AddListener(() => { LoadLevel(placeholder); }); //apparently, it doesn't consider what the number in the function is until it is called, so it was always called with i = 20.
                 newLevel.GetComponentInChildren<Text>().text = "Challenge " + (i + 1);
             }
+        }
+        if(PlayerPrefs.HasKey("Congratulation"))
+        {
+            congratulation.SetActive(true);
+            PlayerPrefs.DeleteKey("Congratulation");
         }
     }
     
@@ -61,5 +67,10 @@ public class LevelSelectManager : MonoBehaviour
     public void Quit()
     {
         SceneManager.LoadScene("Title Scene");
+    }
+
+    public void CloseCongrats()
+    {
+        congratulation.SetActive(false);
     }
 }

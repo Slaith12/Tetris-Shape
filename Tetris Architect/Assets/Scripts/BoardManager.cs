@@ -10,6 +10,7 @@ public class BoardManager : MonoBehaviour
     [SerializeField] Text lineDropText;
     [SerializeField] Image[] pieceImages;
     [SerializeField] GameManager gameManager;
+    [SerializeField] Text timerText;
     public Sprite[] pieceSprites;
 
     public Tile[,] tiles = new Tile[10, 20];
@@ -17,6 +18,8 @@ public class BoardManager : MonoBehaviour
 
     int clearedLines;
     bool[] availablePieces = new bool[] { true, true, true, true, true, true, true };
+    public double startTime;
+    bool activeTimer;
 
     PieceMovement pieceMovement;
     ObjectiveManager objectiveManager;
@@ -42,7 +45,25 @@ public class BoardManager : MonoBehaviour
     
     void Update()
     {
-        
+        if (activeTimer)
+        {
+            double currentTime = AudioSettings.dspTime - startTime;
+            int minutes = (int)(currentTime / 60.0);
+            string seconds = (currentTime - (minutes * 60.0)).ToString();
+            if(!seconds.Contains(".")) //if seconds is a whole number, it won't have a decimal point.
+            {
+                seconds += ".00";
+            }
+            if(seconds[2] != '.') //if seconds is less than 10, the decimal point will be on index 1.
+            {
+                seconds = "0" + seconds;
+            }
+            if(seconds.Length < 5) //if seconds was to a tenth of a second, there will be only 4 characters.
+            {
+                seconds += "0";
+            }
+            timerText.text = minutes + ":" + seconds.Substring(0, 5);
+        }
     }
 
     public void ClearBoard()
@@ -70,9 +91,14 @@ public class BoardManager : MonoBehaviour
         }
         if(objectiveManager.CheckObjective())
         {
+            activeTimer = false;
             winScreen.SetActive(true);
             if(!objectiveManager.onTutorial && (!PlayerPrefs.HasKey("Unlocked Levels") || PlayerPrefs.GetInt("Unlocked Levels") <= objectiveManager.currentLevel))
             {
+                if(PlayerPrefs.GetInt("Unlocked Levels") == 15)
+                {
+                    PlayerPrefs.SetInt("Congratulation", 0);
+                }
                 PlayerPrefs.SetInt("Unlocked Levels", objectiveManager.currentLevel + 1);
             }
             pieceMovement.enabled = false;
@@ -130,6 +156,9 @@ public class BoardManager : MonoBehaviour
 
     public void BeginLevel(int startingTopRow, float startSpeed)
     {
+        startTime = AudioSettings.dspTime;
+        activeTimer = PlayerPrefs.HasKey("Timer") && PlayerPrefs.GetInt("Timer") == 1;
+        timerText.gameObject.SetActive(activeTimer);
         gameManager.disablePausing = false;
         pieceMovement.enabled = true;
         clearedLines = 0;

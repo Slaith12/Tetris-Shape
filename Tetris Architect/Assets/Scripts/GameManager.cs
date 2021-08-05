@@ -49,7 +49,7 @@ public class GameManager : MonoBehaviour
             case "Next Level":
                 if(!objectiveManager.GoToNextLevel())
                 {
-                    goto case "Main Menu";
+                    GoToLevelSelect();
                 }
                 break;
             case "Main Menu":
