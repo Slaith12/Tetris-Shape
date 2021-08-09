@@ -8,6 +8,8 @@ public class MainMenu : MonoBehaviour
 {
     [SerializeField] Text fullscreenText;
     [SerializeField] Text timerText;
+    [SerializeField] Slider volumeSlider;
+    [SerializeField] GameObject settings;
 
     // Start is called before the first frame update
     void Start()
@@ -20,6 +22,11 @@ public class MainMenu : MonoBehaviour
         {
             timerText.text = "Timer Mode: On";
         }
+        if (PlayerPrefs.HasKey("Volume"))
+        {
+            volumeSlider.value = PlayerPrefs.GetFloat("Volume");
+        }
+        settings.SetActive(false);
     }
 
     // Update is called once per frame
@@ -64,5 +71,27 @@ public class MainMenu : MonoBehaviour
             PlayerPrefs.SetInt("Timer", 1);
             timerText.text = "Timer Mode: On";
         }
+    }
+
+    public void ResetProgress()
+    {
+        float volume = 0.5f;
+        if(PlayerPrefs.HasKey("Volume"))
+        {
+            volume = PlayerPrefs.GetFloat("Volume");
+        }
+        PlayerPrefs.DeleteAll();
+        PlayerPrefs.SetFloat("Volume", volume);
+        timerText.text = "Timer Mode: Off";
+    }
+
+    public void Settings(bool enable)
+    {
+        settings.SetActive(enable);
+    }
+
+    public void ChangeMusicVolume(float volume)
+    {
+        PlayerPrefs.SetFloat("Volume", volume);
     }
 }

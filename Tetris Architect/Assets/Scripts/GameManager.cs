@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject board;
     [SerializeField] GameObject pauseScreen;
     [SerializeField] GameObject menuWarning;
+    [SerializeField] AudioSource music;
 
     ObjectiveManager objectiveManager;
     PieceMovement pieceMovement;
@@ -15,7 +16,7 @@ public class GameManager : MonoBehaviour
 
     bool paused;
     [HideInInspector] public bool disablePausing;
-    
+
     void Start()
     {
         objectiveManager = board.GetComponent<ObjectiveManager>();
@@ -25,13 +26,18 @@ public class GameManager : MonoBehaviour
         menuWarning.SetActive(false);
         paused = false;
         disablePausing = false;
+        if (!PlayerPrefs.HasKey("Volume"))
+        {
+            PlayerPrefs.SetFloat("Volume", 1f);
+        }
+        music.volume = PlayerPrefs.GetFloat("Volume");
     }
-    
+
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.P))
+        if (Input.GetKeyDown(KeyCode.P))
         {
-            if(paused)
+            if (paused)
             {
                 Resume();
             }
@@ -44,10 +50,10 @@ public class GameManager : MonoBehaviour
 
     public void HandleButton(string message)
     {
-        switch(message)
+        switch (message)
         {
             case "Next Level":
-                if(!objectiveManager.GoToNextLevel())
+                if (!objectiveManager.GoToNextLevel())
                 {
                     GoToLevelSelect();
                 }
@@ -93,7 +99,7 @@ public class GameManager : MonoBehaviour
     {
         if (disablePausing)
             return;
-        if(paused)
+        if (paused)
         {
             Resume();
             return;
@@ -112,5 +118,5 @@ public class GameManager : MonoBehaviour
         paused = false;
         pauseScreen.SetActive(false);
         pieceMovement.enabled = true;
-    }
+    } 
 }

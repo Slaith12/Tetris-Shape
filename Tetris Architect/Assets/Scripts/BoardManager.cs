@@ -48,21 +48,7 @@ public class BoardManager : MonoBehaviour
         if (activeTimer)
         {
             double currentTime = AudioSettings.dspTime - startTime;
-            int minutes = (int)(currentTime / 60.0);
-            string seconds = (currentTime - (minutes * 60.0)).ToString();
-            if(!seconds.Contains(".")) //if seconds is a whole number, it won't have a decimal point.
-            {
-                seconds += ".00";
-            }
-            if(seconds[2] != '.') //if seconds is less than 10, the decimal point will be on index 1.
-            {
-                seconds = "0" + seconds;
-            }
-            if(seconds.Length < 5) //if seconds was to a tenth of a second, there will be only 4 characters.
-            {
-                seconds += "0";
-            }
-            timerText.text = minutes + ":" + seconds.Substring(0, 5);
+            timerText.text = ConvertTime((float)currentTime);
         }
     }
 
@@ -89,9 +75,17 @@ public class BoardManager : MonoBehaviour
                 i--;
             }
         }
-        if(objectiveManager.CheckObjective())
+        if (objectiveManager.CheckObjective())
         {
-            activeTimer = false;
+            if (activeTimer)
+            {
+                activeTimer = false;
+                if(!PlayerPrefs.HasKey("Level " + objectiveManager.currentLevel) || PlayerPrefs.GetFloat("Level " + objectiveManager.currentLevel) > AudioSettings.dspTime - startTime)
+                {
+                    PlayerPrefs.SetFloat("Level " + objectiveManager.currentLevel, (float)(AudioSettings.dspTime - startTime));
+                }
+                timerText.text += "\nBest Time: " + ConvertTime(PlayerPrefs.GetFloat("Level " + objectiveManager.currentLevel));
+            }
             winScreen.SetActive(true);
             if(!objectiveManager.onTutorial && (!PlayerPrefs.HasKey("Unlocked Levels") || PlayerPrefs.GetInt("Unlocked Levels") <= objectiveManager.currentLevel))
             {
@@ -106,6 +100,25 @@ public class BoardManager : MonoBehaviour
             return;
         }
         pieceMovement.GetNewPiece(TakePiece());
+    }
+
+    public static string ConvertTime(float time)
+    {
+        int minutes = (int)(time / 60.0);
+        string seconds = (time - (minutes * 60.0)).ToString();
+        if (!seconds.Contains(".")) //if seconds is a whole number, it won't have a decimal point.
+        {
+            seconds += ".00";
+        }
+        if (seconds[2] != '.') //if seconds is less than 10, the decimal point will be on index 1.
+        {
+            seconds = "0" + seconds;
+        }
+        if (seconds.Length < 5) //if seconds was to a tenth of a second, there will be only 4 characters.
+        {
+            seconds += "0";
+        }
+        return minutes + ":" + seconds.Substring(0, 5);
     }
 
     public void SetTile(int x, int y, TileState newState)
@@ -157,7 +170,7 @@ public class BoardManager : MonoBehaviour
     public void BeginLevel(int startingTopRow, float startSpeed)
     {
         startTime = AudioSettings.dspTime;
-        activeTimer = PlayerPrefs.HasKey("Timer") && PlayerPrefs.GetInt("Timer") == 1;
+        activeTimer = PlayerPrefs.HasKey("Timer") && PlayerPrefs.GetInt("Timer") == 1 && !objectiveManager.onTutorial;
         timerText.gameObject.SetActive(activeTimer);
         gameManager.disablePausing = false;
         pieceMovement.enabled = true;

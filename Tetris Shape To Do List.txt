@@ -2,11 +2,11 @@ homework:
 
 improve UI
 update readme
-
-level editor
+settings page
 
 maybe:
 consider sfx
+level editor
 
 Original plans for levels:
 level 1: learn basic mechanics
@@ -52,3 +52,5 @@ O piece color: 255, 240, 0
 
  Tetris
 Architect
+
+Dev Downloads: 22
